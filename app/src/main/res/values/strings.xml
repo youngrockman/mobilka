@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ShoesappTest</string>
+    <string name="sign_in_subtitle">Заполните cвои данные или продолжите через социальные медиа</string>
+    <string name="hello">Привет</string>
 </resources>
