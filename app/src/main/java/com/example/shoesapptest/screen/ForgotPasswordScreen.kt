@@ -228,7 +228,7 @@ fun EmailSentDialog(onDismiss: () -> Unit) {
                     Icon(
                         painter = painterResource(R.drawable.email_image),
                         contentDescription = null,
-                        tint = Color.Blue,
+                        tint = MatuleTheme.colors.accent,
                         modifier = Modifier.size(40.dp)
                     )
                 }
