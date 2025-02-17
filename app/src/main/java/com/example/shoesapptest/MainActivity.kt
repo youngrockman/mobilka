@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.shoesapp.ui.screen.SignInContent
 import com.example.shoesapp.ui.screen.SigninScreen
 import com.example.shoesapp.ui.theme.MatuleTheme
+import com.example.shoesapptest.screen.ForgotPassScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MatuleTheme {
-                SigninScreen()
+                ForgotPassScreen()
             }
         }
     }

@@ -1,5 +1,6 @@
-package com.example.shoesapp.ui.screen
+package com.example.shoesapptest.screen
 
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,12 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +33,7 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,8 +52,11 @@ import androidx.compose.ui.unit.dp
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
 
+
 @Composable
-fun SigninScreen() {
+fun ForgotPassScreen() {
+    val showDialog = remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             Row(
@@ -65,77 +72,58 @@ fun SigninScreen() {
                     )
                 }
             }
-        },
-        bottomBar = {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(bottom = 50.dp)
-                    .fillMaxWidth()
-                    .height(40.dp)
-            ) {
-                Text(
-                    stringResource(R.string.sign_up),
-                    style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
-                    textAlign = TextAlign.Center
-                )
-            }
         }
     ) { paddingValues ->
-        SignInContent(paddingValues)
+        ForgotPassContent(paddingValues, showDialog)
+    }
+
+
+    if (showDialog.value) {
+        EmailSentDialog(onDismiss = { showDialog.value = false })
     }
 }
 
 @Composable
-fun SignInContent(paddingValues: PaddingValues) {
+fun ForgotPassContent(paddingValues: PaddingValues, showDialog: MutableState<Boolean>) {
     Column(
-        modifier = Modifier.padding(paddingValues = paddingValues)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         TitleWithSubtitleText(
-            title = stringResource(R.string.hello),
-            subText = stringResource(R.string.sign_in_subtitle)
+            title = "Забыл пароль",
+            subText = "Введите свою учетную запись\nдля сброса"
         )
 
         val email = remember { mutableStateOf("") }
         Spacer(modifier = Modifier.height(35.dp))
-        AuthTextField(
-            labelText = "Email",
+        ForgotPassField(
             value = email.value,
             onChangeValue = { email.value = it },
-            placeMolderText = stringResource(R.string.template_email)
-        )
-
-        val password = remember { mutableStateOf("") }
-        Spacer(modifier = Modifier.height(35.dp))
-        PasswordTextField(
-            passText = "Пароль",
-            value = password.value,
-            onChangeValue = { password.value = it }
+            placeHolderText = "xyz@gmail.com"
         )
         CommonButton(
             modifier = Modifier.padding(top = 50.dp),
-            buttonLabel = stringResource(R.string.Sign_In)
-        ) {
-            // Обработка нажатия кнопки
-        }
+            buttonLabel = "Отправить"
+        ) { showDialog.value = true }
     }
 }
 
 @Composable
-fun CommonButton(modifier: Modifier, buttonLabel: String, onClick: () -> Unit) {
-    Button(
-        modifier = modifier
-            .padding(horizontal = 20.dp)
-            .fillMaxWidth()
-            .height(50.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(MatuleTheme.colors.accent),
+fun CommonButton(modifier: Modifier,buttonLabel:String, onClick: () -> Unit){
+    Button(modifier = modifier
+        .padding(horizontal = 20.dp)
+        .fillMaxWidth()
+        .height(50.dp)
+        .clip(RoundedCornerShape(14.dp))
+        .background(MatuleTheme.colors.accent),
         colors = ButtonColors(
-            containerColor = MatuleTheme.colors.accent,
+            contentColor = MatuleTheme.colors.accent,
             disabledContentColor = Color.Transparent,
             disabledContainerColor = MatuleTheme.colors.accent,
-            contentColor = Color.Transparent
+            containerColor = Color.Transparent
         ),
         onClick = onClick
     ) {
@@ -148,33 +136,31 @@ fun CommonButton(modifier: Modifier, buttonLabel: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun TitleWithSubtitleText(title: String, subText: String) {
+fun TitleWithSubtitleText(title:String, subText:String){
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = title,
+            text= title,
             style = MatuleTheme.typography.headingBold32.copy(color = MatuleTheme.colors.text),
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Center
         )
         Text(
             text = subText,
-            maxLines = 2,
             style = MatuleTheme.typography.subTitleRegular16.copy(color = MatuleTheme.colors.subTextDark),
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Center
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuthTextField(
+fun ForgotPassField(
     value: String,
     onChangeValue: (String) -> Unit,
-    placeMolderText: String? = null,
-    labelText: String? = null
+    placeHolderText: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -182,30 +168,24 @@ fun AuthTextField(
             .wrapContentSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        if (labelText != null) {
-            Text(
-                text = labelText,
-                style = MatuleTheme.typography.bodyRegular16.copy(MatuleTheme.colors.text),
-                textAlign = TextAlign.Right
-            )
-        }
         val interaction = remember { MutableInteractionSource() }
         BasicTextField(
             value = value,
             onValueChange = { onChangeValue(it) },
             modifier = Modifier
-                .padding(horizontal = 20.dp)
                 .fillMaxWidth()
                 .background(MatuleTheme.colors.background)
-                .clip(RoundedCornerShape(14.dp)),
+                .clip(RoundedCornerShape(14.dp))
+                .padding(16.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         ) { innerTextField ->
             TextFieldDefaults.DecorationBox(
                 value = value,
                 singleLine = true,
                 innerTextField = innerTextField,
                 enabled = true,
-                visualTransformation = VisualTransformation.None,
                 interactionSource = interaction,
+                visualTransformation = VisualTransformation.None,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MatuleTheme.colors.background,
                     disabledContainerColor = MatuleTheme.colors.background,
@@ -217,80 +197,72 @@ fun AuthTextField(
                     errorIndicatorColor = Color.Transparent
                 ),
                 placeholder = {
-                    if (placeMolderText != null)
+                    if (placeHolderText != null) {
                         Text(
-                            text = placeMolderText,
-                            style = MatuleTheme.typography.bodyRegular14.copy(color = MatuleTheme.colors.hint),
+                            text = placeHolderText,
+                            style = MatuleTheme.typography.bodyRegular14.copy(color = MatuleTheme.colors.hint)
                         )
+                    }
                 }
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
-fun PasswordTextField(
-    value: String,
-    onChangeValue: (String) -> Unit,
-    passText: String? = null
-) {
-    val passwordVisible = remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 20.dp)
-            .wrapContentSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        if (passText != null) {
-            Text(
-                text = passText,
-                style = MatuleTheme.typography.bodyRegular16.copy(MatuleTheme.colors.text),
-                textAlign = TextAlign.Right
-            )
-        }
-
-        val interaction = remember { MutableInteractionSource() }
-        BasicTextField(
-            value = value,
-            onValueChange = { onChangeValue(it) },
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .background(MatuleTheme.colors.background)
-                .clip(RoundedCornerShape(14.dp)),
-            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        ) { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = value,
-                innerTextField = innerTextField,
-                enabled = true,
-                singleLine = true,
-                visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                interactionSource = interaction,
-                trailingIcon = {
-                    IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
-                        Icon(
-                            painter = painterResource(
-                                if (passwordVisible.value) R.drawable.eye_close else R.drawable.eye_open
-                            ),
-                            contentDescription = null
-                        )
-                    }
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MatuleTheme.colors.background,
-                    disabledContainerColor = MatuleTheme.colors.background,
-                    unfocusedContainerColor = MatuleTheme.colors.background,
-                    errorContainerColor = MatuleTheme.colors.background,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+fun EmailSentDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {},
+        title = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.email_image),
+                        contentDescription = null,
+                        tint = Color.Blue,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+                Text(
+                    text = "Проверьте Ваш Email",
+                    style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
+                    textAlign = TextAlign.Center
                 )
+            }
+        },
+        text = {
+            Text(
+                text = "Мы отправили код восстановления пароля на вашу электронную почту.",
+                textAlign = TextAlign.Center,
+                style = MatuleTheme.typography.bodyRegular14.copy(color = MatuleTheme.colors.hint)
             )
-        }
-    }
+        },
+        modifier = Modifier.clip(RoundedCornerShape(14.dp)),
+        containerColor = Color.White
+    )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

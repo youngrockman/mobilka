@@ -2,4 +2,7 @@
     <string name="app_name">ShoesappTest</string>
     <string name="sign_in_subtitle">Заполните cвои данные или продолжите через социальные медиа</string>
     <string name="hello">Привет</string>
+    <string name="template_email">xyz@gmail.com</string>
+    <string name="Sign_In">Войти</string>
+    <string name="sign_up">Вы впервые? Создать пользователя</string>
 </resources>

@@ -20,7 +20,8 @@ data class MatuleColors(
     val text: Color,
     val subTextDark: Color,
     val background: Color,
-    val hint: Color
+    val hint: Color,
+    val accent: Color
 )
 
 @Immutable
@@ -49,7 +50,9 @@ val LocalMatuleColors = staticCompositionLocalOf {
         text = Color.Unspecified,
         subTextDark = Color.Unspecified,
         background = Color.Unspecified,
-        hint = Color.Unspecified
+        hint = Color.Unspecified,
+        accent = Color.Unspecified
+
     )
 }
 
@@ -70,10 +73,12 @@ val matuleFontFamily = FontFamily(
 fun MatuleTheme( content: (@Composable () -> Unit)){
     val matuleColors = MatuleColors(
         block = Color(0xFFFFFFFF),
-        text = Color(0x2B2B2B),
-        subTextDark = Color(0x707B81),
-        background = Color(0xF7F7F9),
-        hint = Color(0x6A6A6A)
+        text = Color(0xFF2B2B2B),
+        subTextDark = Color(0xFF707B81),
+        background = Color(0xFFF7F7F9),
+        hint = Color(0xFF6A6A6A),
+        accent = Color(0xFF48B2E7)
+
 
     )
     val matuleTypography = MatuleTextStyle(
