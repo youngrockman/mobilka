@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -384,8 +386,12 @@ fun SimpleCheckbox() {
             checked = isChecked.value,
             onCheckedChange = { isChecked.value = it }
         )
-        Text(
-            text = "Даю согласие на обработку персональных данных",
+        ClickableText(
+            text = AnnotatedString(
+                "Даю согласие на обработку персональных данных"
+            ),
+            onClick = {},
+            style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
             modifier = Modifier.padding(start = 8.dp)
         )
     }
