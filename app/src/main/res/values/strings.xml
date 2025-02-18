@@ -5,4 +5,5 @@
     <string name="template_email">xyz@gmail.com</string>
     <string name="Sign_In">Войти</string>
     <string name="sign_up">Вы впервые? Создать пользователя</string>
+    <string name="personal_data">Даю согласие на обработку персональных данных</string>
 </resources>
