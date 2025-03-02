@@ -102,9 +102,9 @@ fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode) 
             value = signInState.value.email,
             onChangeValue = { signInViewMode.setEmail(it) },
             isError = signInViewMode.emailHasError.value,
-            supportingText = { Text(text = "Неыерный логин")},
+            supportingText = { Text(text = stringResource(R.string.LoginError))},
             placeholder = { Text(text = stringResource(R.string.template_email)) },
-            label = { Text(text = "Email")
+            label = { Text(text = stringResource(R.string.email))
             }
         )
 
@@ -113,8 +113,8 @@ fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode) 
             onChangeValue = { signInViewMode.setPassword(it)},
             isError = false,
             supportingText = { Text(text = "Неверный пароль")},
-            placeholder = { Text(text = "ххххххх")},
-            label = { Text(text = "Пароль")}
+            placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder))},
+            label = { Text(text = stringResource(R.string.Password))}
         )
         AuthButton(onClick = {}) {
             Text(stringResource(R.string.Sign_In))

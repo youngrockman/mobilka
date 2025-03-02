@@ -1,4 +1,4 @@
-package com.example.shoesapptest.screen.forgotpassword.component
+package com.example.shoesapptest.screen.regscreen.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,9 +11,9 @@ import com.example.shoesapptest.common.CommonTextField
 
 
 @Composable
-fun ForgotPassField(
-    value:String,
-    onChangeValue: (String) -> Unit,
+fun RegistrationTextField(
+    value: String,
+    onChangeValue: (String)-> Unit,
     isError: Boolean,
     supportingText: @Composable () -> Unit,
     placeholder: @Composable () -> Unit,
@@ -29,7 +29,7 @@ fun ForgotPassField(
         CommonTextField(
             value = value,
             onChangeValue = onChangeValue,
-            isError = isError,
+            isError =  isError,
             supportingText = supportingText,
             placeHolder = placeholder
         )

@@ -6,4 +6,10 @@
     <string name="Sign_In">Войти</string>
     <string name="sign_up">Вы впервые? Создать пользователя</string>
     <string name="personal_data">Даю согласие на обработку персональных данных</string>
+    <string name="email">Email</string>
+    <string name="Registration">Регистрация</string>
+    <string name="PasswordPlaceHolder">ххххххх</string>
+    <string name="Password">Пароль</string>
+    <string name="LoginError">Неверный логин</string>
+    <string name="PasswordError">Неверный пароль</string>
 </resources>
