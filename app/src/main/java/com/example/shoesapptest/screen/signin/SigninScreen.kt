@@ -1,6 +1,7 @@
 package com.example.shoesapp.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
 import com.example.shoesapptest.common.CommonButton
@@ -45,7 +47,7 @@ import com.example.shoesapptest.screen.signin.component.AuthTextField
 import com.example.shoesapptest.screen.signin.component.TitleWithSubtitleText
 
 @Composable
-fun SigninScreen() {
+fun SigninScreen(onNavigationToRegScreen: () -> Unit, navController: NavController) {
     val signInViewModel: SignInViewMode = viewModel()
     Scaffold(
         topBar = {
@@ -75,17 +77,18 @@ fun SigninScreen() {
                 Text(
                     stringResource(R.string.sign_up),
                     style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.clickable { onNavigationToRegScreen() }
                 )
             }
         }
     ) { paddingValues ->
-        SignInContent(paddingValues, signInViewModel)
+        SignInContent(paddingValues, signInViewModel, navController)
     }
 }
 
 @Composable
-fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode) {
+fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode, navController: NavController) {
     val signInState = signInViewMode.signInState
     Column(
         modifier = Modifier.padding(paddingValues = paddingValues),
@@ -97,31 +100,41 @@ fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode) 
         )
         Spacer(modifier = Modifier.height(35.dp))
 
-
         AuthTextField(
             value = signInState.value.email,
             onChangeValue = { signInViewMode.setEmail(it) },
             isError = signInViewMode.emailHasError.value,
             supportingText = { Text(text = stringResource(R.string.LoginError))},
             placeholder = { Text(text = stringResource(R.string.template_email)) },
-            label = { Text(text = stringResource(R.string.email))
-            }
+            label = { Text(text = stringResource(R.string.email)) }
         )
 
         AuthTextField(
             value = signInState.value.password,
-            onChangeValue = { signInViewMode.setPassword(it)},
+            onChangeValue = { signInViewMode.setPassword(it) },
             isError = false,
             supportingText = { Text(text = "Неверный пароль")},
-            placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder))},
-            label = { Text(text = stringResource(R.string.Password))}
+            placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
+            label = { Text(text = stringResource(R.string.Password)) }
         )
+
+
+        Text(
+            text = "Забыл пароль",
+            style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
+            modifier = Modifier
+                .clickable {
+                    navController.navigate("forgotpass")
+                }
+                .padding(top = 8.dp)
+        )
+
         AuthButton(onClick = {}) {
             Text(stringResource(R.string.Sign_In))
         }
-
     }
 }
+
 
 
 

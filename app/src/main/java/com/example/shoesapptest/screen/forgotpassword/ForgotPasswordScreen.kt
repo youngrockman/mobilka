@@ -36,7 +36,7 @@ import com.example.shoesapptest.screen.signin.component.TitleWithSubtitleText
 
 
 @Composable
-fun ForgotPassScreen() {
+fun ForgotPassScreen(onNavigateToSignInScreen: () -> Unit) {
     val forgotPassViewModel: ForgotPassViewModel = viewModel()
     val showDialog = remember { mutableStateOf(false) }
 
