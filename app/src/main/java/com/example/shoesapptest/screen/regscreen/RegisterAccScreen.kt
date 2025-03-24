@@ -52,6 +52,7 @@ fun RegisterAccountScreen(
     registrationScreen: RegistrationScreen,
     onNavigationToSigninScreen: () -> Unit
 ) {
+
     val registrationViewModel: RegistrationViewModel = viewModel()
     Scaffold(
         topBar = {
