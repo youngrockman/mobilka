@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -37,9 +38,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
+import com.example.shoesapptest.data.local.DataStore
+import com.example.shoesapptest.data.remote.network.RetrofitClient
+import com.example.shoesapptest.data.repository.AuthRepository
 import com.example.shoesapptest.screen.regscreen.component.RegisterButton
 import com.example.shoesapptest.screen.regscreen.component.RegistrationTextField
 import com.example.shoesapptest.screen.regscreen.component.TitleAndSubTitle
@@ -52,8 +58,15 @@ fun RegisterAccountScreen(
     registrationScreen: RegistrationScreen,
     onNavigationToSigninScreen: () -> Unit
 ) {
-
-    val registrationViewModel: RegistrationViewModel = viewModel()
+    val dataStore = DataStore(LocalContext.current)
+    val repository = AuthRepository(dataStore, RetrofitClient.auth)
+    val registrationViewModel: RegistrationViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return RegistrationViewModel(repository) as T
+            }
+        }
+    )
     Scaffold(
         topBar = {
             Row(
@@ -103,7 +116,7 @@ fun RegisterAccountContent(
     registrationScreen: RegistrationScreen,
     onNavigationToSigninScreen: () -> Unit
 ) {
-    val reg = registrationViewModel.registration
+    val reg = registrationViewModel.registration.value
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,7 +130,7 @@ fun RegisterAccountContent(
         Spacer(modifier = Modifier.height(20.dp))
 
         RegistrationTextField(
-            value = reg.value.name,
+            value = reg.name,
             onChangeValue = { registrationViewModel.setUserName(it) },
             isError = false,
             supportingText = { Text(text = "Неверное имя пользователя") },
@@ -126,16 +139,16 @@ fun RegisterAccountContent(
         )
 
         RegistrationTextField(
-            value = reg.value.email,
+            value = reg.email,
             onChangeValue = { registrationViewModel.setEmail(it) },
-            isError = registrationViewModel.emailHasError.value,
+            isError = registrationViewModel.emailHasError,
             supportingText = { Text(text = stringResource(R.string.LoginError)) },
             placeholder = { Text(text = stringResource(R.string.template_email)) },
             label = { Text(text = stringResource(R.string.email)) },
         )
 
         RegistrationTextField(
-            value = reg.value.password,
+            value = reg.password,
             onChangeValue = { registrationViewModel.setPassword(it) },
             isError = false,
             supportingText = { Text(text = stringResource(R.string.PasswordError)) },
@@ -146,7 +159,7 @@ fun RegisterAccountContent(
         SimpleCheckbox()
 
         Text(registrationScreen.sampleText)
-        RegisterButton(onClick = onNavigationToSigninScreen) {
+        RegisterButton(onClick = {registrationViewModel.register { onNavigationToSigninScreen() }}) {
             Text(text = stringResource(R.string.Registration))
         }
     }

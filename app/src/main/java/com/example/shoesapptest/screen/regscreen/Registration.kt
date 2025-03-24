@@ -1,6 +1,6 @@
 package com.example.shoesapptest.screen.regscreen
 
-data class Registration (
+data class Registration(
     var email: String = "",
     var password: String = "",
     var name: String = "",
