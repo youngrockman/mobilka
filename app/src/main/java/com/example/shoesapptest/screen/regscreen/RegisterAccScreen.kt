@@ -59,7 +59,7 @@ fun RegisterAccountScreen(
     onNavigationToSigninScreen: () -> Unit
 ) {
     val dataStore = DataStore(LocalContext.current)
-    val repository = AuthRepository(dataStore, RetrofitClient.auth)
+    val repository = AuthRepository(RetrofitClient.auth)
     val registrationViewModel: RegistrationViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {

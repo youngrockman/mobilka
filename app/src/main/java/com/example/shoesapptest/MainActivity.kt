@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
             MatuleTheme {
                 val navController = rememberNavController()
                 val dataStore = DataStore(applicationContext)
-                val repository = AuthRepository(dataStore,RetrofitClient.auth)
+                val repository = AuthRepository(RetrofitClient.auth)
 
                 NavHost(
                     navController = navController,
