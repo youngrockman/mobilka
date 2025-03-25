@@ -1,6 +1,7 @@
 package com.example.shoesapptest.screen.regscreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,13 +17,17 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -51,25 +56,19 @@ import com.example.shoesapptest.screen.regscreen.component.RegisterButton
 import com.example.shoesapptest.screen.regscreen.component.RegistrationTextField
 import com.example.shoesapptest.screen.regscreen.component.TitleAndSubTitle
 import com.example.shoesapptest.screen.signin.component.AuthTextField
+import org.koin.compose.viewmodel.koinViewModel
 
-data class RegistrationScreen(val sampleText: String)
 
 @Composable
 fun RegisterAccountScreen(
-    registrationScreen: RegistrationScreen,
-    onNavigationToSigninScreen: () -> Unit
+    onNavigationToSigninScreen: () -> Unit,
+    viewModel: RegistrationViewModel = koinViewModel()
 ) {
-    val dataStore = DataStore(LocalContext.current)
-    val repository = AuthRepository(RetrofitClient.auth)
-    val authUseCase = AuthUseCase(dataStore, repository)
-    val registrationViewModel: RegistrationViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return RegistrationViewModel(authUseCase) as T
-            }
-        }
-    )
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             Row(
                 modifier = Modifier
@@ -77,7 +76,7 @@ fun RegisterAccountScreen(
                     .fillMaxWidth()
                     .height(40.dp)
             ) {
-                IconButton(onClick = {}) {
+                IconButton(onClick = onNavigationToSigninScreen) {
                     Icon(
                         painter = painterResource(R.drawable.back_arrow),
                         contentDescription = null
@@ -90,7 +89,11 @@ fun RegisterAccountScreen(
                 modifier = Modifier
                     .padding(bottom = 50.dp)
                     .fillMaxWidth()
-                    .height(40.dp),
+                    .height(40.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onNavigationToSigninScreen() },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -102,73 +105,76 @@ fun RegisterAccountScreen(
             }
         }
     ) { paddingValues ->
-        RegisterAccountContent(
-            paddingValues = paddingValues,
-            registrationViewModel = registrationViewModel,
-            registrationScreen = registrationScreen,
-            onNavigationToSigninScreen = onNavigationToSigninScreen
-        )
-    }
-}
+        val state = viewModel.registrationScreenState.value
 
-@Composable
-fun RegisterAccountContent(
-    paddingValues: PaddingValues,
-    registrationViewModel: RegistrationViewModel,
-    registrationScreen: RegistrationScreen,
-    onNavigationToSigninScreen: () -> Unit
-) {
-    val reg = registrationViewModel.registrationScreenState.value
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-    ) {
-        TitleAndSubTitle(
-            title = "Регистрация",
-            subText = "Заполните Свои данные или продолжите через социальные медиа"
-        )
+        LaunchedEffect(state.isSignedIn) {
+            if (state.isSignedIn) {
+                onNavigationToSigninScreen()
+            }
+        }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        LaunchedEffect(state.errorMessage) {
+            state.errorMessage?.let {
+                snackbarHostState.showSnackbar(it)
+                viewModel.setErrorMessage(null)
+            }
+        }
 
-        RegistrationTextField(
-            value = reg.name,
-            onChangeValue = { registrationViewModel.setName(it) },
-            isError = false,
-            supportingText = { Text(text = "Неверное имя пользователя") },
-            placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
-            label = { Text(text = "Ваше имя") }
-        )
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            TitleAndSubTitle(
+                title = "Регистрация",
+                subText = "Заполните Свои данные или продолжите через социальные медиа"
+            )
 
-        RegistrationTextField(
-            value = reg.email,
-            onChangeValue = { registrationViewModel.setEmail(it) },
-            isError = registrationViewModel.emailHasError,
-            supportingText = { Text(text = stringResource(R.string.LoginError)) },
-            placeholder = { Text(text = stringResource(R.string.template_email)) },
-            label = { Text(text = stringResource(R.string.email)) },
-        )
+            Spacer(modifier = Modifier.height(20.dp))
 
-        RegistrationTextField(
-            value = reg.password,
-            onChangeValue = { registrationViewModel.setPassword(it) },
-            isError = false,
-            supportingText = { Text(text = stringResource(R.string.PasswordError)) },
-            placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
-            label = { Text(text = stringResource(R.string.Password)) }
-        )
+            RegistrationTextField(
+                value = state.name,
+                onChangeValue = { viewModel.setName(it) },
+                isError = false,
+                supportingText = { Text(text = "Неверное имя пользователя") },
+                placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
+                label = { Text(text = "Ваше имя") }
+            )
 
-        SimpleCheckbox()
+            RegistrationTextField(
+                value = state.email,
+                onChangeValue = { viewModel.setEmail(it) },
+                isError = state.emailHasError,
+                supportingText = { Text(text = stringResource(R.string.LoginError)) },
+                placeholder = { Text(text = stringResource(R.string.template_email)) },
+                label = { Text(text = stringResource(R.string.email)) },
+            )
 
-        Text(registrationScreen.sampleText)
-        RegisterButton(onClick = {registrationViewModel.register { onNavigationToSigninScreen() }}) {
-            Text(text = stringResource(R.string.Registration))
+            RegistrationTextField(
+                value = state.password,
+                onChangeValue = { viewModel.setPassword(it) },
+                isError = false,
+                supportingText = { Text(text = stringResource(R.string.PasswordError)) },
+                placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
+                label = { Text(text = stringResource(R.string.Password)) }
+            )
+
+            SimpleCheckbox()
+
+            RegisterButton(onClick = { viewModel.register { } }) {
+                if (state.isLoading) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(text = stringResource(R.string.Registration))
+                }
+            }
         }
     }
 }
 
 @Composable
-fun SimpleCheckbox() {
+private fun SimpleCheckbox() {
     val isChecked = remember { mutableStateOf(false) }
 
     Row(
@@ -181,11 +187,8 @@ fun SimpleCheckbox() {
             checked = isChecked.value,
             onCheckedChange = { isChecked.value = it }
         )
-        ClickableText(
-            text = AnnotatedString(
-                "Даю согласие на обработку персональных данных"
-            ),
-            onClick = {},
+        Text(
+            text = "Даю согласие на обработку персональных данных",
             style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
             modifier = Modifier.padding(start = 8.dp)
         )

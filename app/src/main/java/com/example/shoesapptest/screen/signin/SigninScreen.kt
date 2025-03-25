@@ -47,8 +47,12 @@ import com.example.shoesapptest.screen.signin.component.AuthTextField
 import com.example.shoesapptest.screen.signin.component.TitleWithSubtitleText
 
 @Composable
-fun SigninScreen(onNavigationToRegScreen: () -> Unit, navController: NavController) {
+fun SigninScreen(
+    onNavigationToRegScreen: () -> Unit,
+    navController: NavController
+) {
     val signInViewModel: SignInViewMode = viewModel()
+
     Scaffold(
         topBar = {
             Row(
@@ -57,7 +61,7 @@ fun SigninScreen(onNavigationToRegScreen: () -> Unit, navController: NavControll
                     .fillMaxWidth()
                     .height(40.dp)
             ) {
-                IconButton(onClick = {}) {
+                IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         painter = painterResource(R.drawable.back_arrow),
                         contentDescription = null
@@ -73,17 +77,24 @@ fun SigninScreen(onNavigationToRegScreen: () -> Unit, navController: NavControll
                     .padding(bottom = 50.dp)
                     .fillMaxWidth()
                     .height(40.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onNavigationToRegScreen() }
             ) {
                 Text(
                     stringResource(R.string.sign_up),
                     style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.clickable { onNavigationToRegScreen() }
+                    textAlign = TextAlign.Center
                 )
             }
         }
     ) { paddingValues ->
-        SignInContent(paddingValues, signInViewModel, navController)
+        SignInContent(
+            paddingValues = paddingValues,
+            signInViewMode = signInViewModel,
+            navController = navController
+        )
     }
 }
 

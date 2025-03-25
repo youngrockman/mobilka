@@ -9,14 +9,9 @@ import com.example.shoesapptest.domain.usecase.AuthUseCase
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class RegistrationViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
-    private val _registrationScreenState = mutableStateOf(RegistrationScreenState())
-    val registrationScreenState = _registrationScreenState
 
-
-    val emailHasError: Boolean
-        get() = _registrationScreenState.value.emailHasError
-
+class RegistrationViewModel(val authUseCase: AuthUseCase) : ViewModel() {
+    val registrationScreenState = mutableStateOf(RegistrationScreenState())
 
     fun setEmail(email: String) {
         registrationScreenState.value = registrationScreenState.value.copy(
@@ -33,7 +28,7 @@ class RegistrationViewModel(private val authUseCase: AuthUseCase) : ViewModel() 
         registrationScreenState.value = registrationScreenState.value.copy(name = name)
     }
 
-    private fun setErrorMessage(message: String) {
+    fun setErrorMessage(message: String?) {
         registrationScreenState.value = registrationScreenState.value.copy(errorMessage = message)
     }
 

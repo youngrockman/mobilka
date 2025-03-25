@@ -12,42 +12,50 @@ import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.data.local.DataStore
 import com.example.shoesapptest.data.remote.network.RetrofitClient
 import com.example.shoesapptest.data.repository.AuthRepository
+import com.example.shoesapptest.di.appModules
 import com.example.shoesapptest.domain.usecase.AuthUseCase
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
-import com.example.shoesapptest.screen.regscreen.RegistrationScreen
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             MatuleTheme {
+
+                if (GlobalContext.getOrNull() == null) {
+                    startKoin {
+                        modules(appModules)
+                    }
+                }
+
                 val navController = rememberNavController()
-                val dataStore = DataStore(applicationContext)
-                val repository = AuthRepository(RetrofitClient.auth)
-                val authUseCase = AuthUseCase(dataStore, repository)
 
                 NavHost(
                     navController = navController,
-                    startDestination = "signin"
+                    startDestination = Screen.SignIn.route
                 ) {
-                    composable("signin") {
+                    composable(Screen.SignIn.route) {
                         SigninScreen(
                             onNavigationToRegScreen = {
-                                navController.navigate("registration")
+                                navController.navigate(Screen.Registration.route)
                             },
                             navController = navController
                         )
                     }
-                    composable("forgotpass") {
-                        ForgotPassScreen(onNavigateToSignInScreen = {
-                            navController.navigate("signin")
-                        })
+                    composable(Screen.ForgotPass.route) {
+                        ForgotPassScreen(
+                            onNavigateToSignInScreen = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
-                    composable("registration") {
+                    composable(Screen.Registration.route) {
                         RegisterAccountScreen(
-                            registrationScreen = RegistrationScreen("Test"),
                             onNavigationToSigninScreen = {
                                 navController.popBackStack()
                             }
