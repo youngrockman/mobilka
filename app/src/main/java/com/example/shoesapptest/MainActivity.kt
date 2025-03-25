@@ -12,6 +12,7 @@ import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.data.local.DataStore
 import com.example.shoesapptest.data.remote.network.RetrofitClient
 import com.example.shoesapptest.data.repository.AuthRepository
+import com.example.shoesapptest.domain.usecase.AuthUseCase
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
 import com.example.shoesapptest.screen.regscreen.RegistrationScreen
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val dataStore = DataStore(applicationContext)
                 val repository = AuthRepository(RetrofitClient.auth)
+                val authUseCase = AuthUseCase(dataStore, repository)
 
                 NavHost(
                     navController = navController,

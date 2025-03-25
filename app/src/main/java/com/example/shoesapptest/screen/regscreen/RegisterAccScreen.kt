@@ -46,6 +46,7 @@ import com.example.shoesapptest.R
 import com.example.shoesapptest.data.local.DataStore
 import com.example.shoesapptest.data.remote.network.RetrofitClient
 import com.example.shoesapptest.data.repository.AuthRepository
+import com.example.shoesapptest.domain.usecase.AuthUseCase
 import com.example.shoesapptest.screen.regscreen.component.RegisterButton
 import com.example.shoesapptest.screen.regscreen.component.RegistrationTextField
 import com.example.shoesapptest.screen.regscreen.component.TitleAndSubTitle
@@ -60,10 +61,11 @@ fun RegisterAccountScreen(
 ) {
     val dataStore = DataStore(LocalContext.current)
     val repository = AuthRepository(RetrofitClient.auth)
+    val authUseCase = AuthUseCase(dataStore, repository)
     val registrationViewModel: RegistrationViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return RegistrationViewModel(repository) as T
+                return RegistrationViewModel(authUseCase) as T
             }
         }
     )
@@ -116,7 +118,7 @@ fun RegisterAccountContent(
     registrationScreen: RegistrationScreen,
     onNavigationToSigninScreen: () -> Unit
 ) {
-    val reg = registrationViewModel.registration.value
+    val reg = registrationViewModel.registrationScreenState.value
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,7 +133,7 @@ fun RegisterAccountContent(
 
         RegistrationTextField(
             value = reg.name,
-            onChangeValue = { registrationViewModel.setUserName(it) },
+            onChangeValue = { registrationViewModel.setName(it) },
             isError = false,
             supportingText = { Text(text = "Неверное имя пользователя") },
             placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },

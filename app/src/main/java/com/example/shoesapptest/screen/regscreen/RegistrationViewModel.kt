@@ -3,44 +3,67 @@ package com.example.shoesapptest.screen.regscreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.shoesapptest.data.remote.network.NetworkResponse
 import com.example.shoesapptest.data.remote.network.dto.RegistrationRequest
-import com.example.shoesapptest.data.repository.AuthRepository
+import com.example.shoesapptest.domain.usecase.AuthUseCase
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class RegistrationViewModel(
-    private val repository: AuthRepository
-) : ViewModel() {
-    private var _registration = mutableStateOf(Registration())
-    val registration = _registration
+class RegistrationViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
+    private val _registrationScreenState = mutableStateOf(RegistrationScreenState())
+    val registrationScreenState = _registrationScreenState
 
-    val emailHasError get() = !android.util.Patterns.EMAIL_ADDRESS.matcher(_registration.value.email).matches()
+
+    val emailHasError: Boolean
+        get() = _registrationScreenState.value.emailHasError
+
 
     fun setEmail(email: String) {
-        _registration.value = _registration.value.copy(email = email)
+        registrationScreenState.value = registrationScreenState.value.copy(
+            email = email,
+            emailHasError = !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        )
     }
 
     fun setPassword(password: String) {
-        _registration.value = _registration.value.copy(password = password)
+        registrationScreenState.value = registrationScreenState.value.copy(password = password)
     }
 
-    fun setUserName(name: String) {
-        _registration.value = _registration.value.copy(name = name)
+    fun setName(name: String) {
+        registrationScreenState.value = registrationScreenState.value.copy(name = name)
+    }
+
+    private fun setErrorMessage(message: String) {
+        registrationScreenState.value = registrationScreenState.value.copy(errorMessage = message)
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        registrationScreenState.value = registrationScreenState.value.copy(isLoading = isLoading)
     }
 
     fun register(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            try {
-                val response = repository.registration(
-                    RegistrationRequest(
-                        userName = _registration.value.name,
-                        email = _registration.value.email,
-                        password = _registration.value.password
-                    )
-                )
+            val registrationRequest = RegistrationRequest(
+                email = registrationScreenState.value.email,
+                userName = registrationScreenState.value.name,
+                password = registrationScreenState.value.password
+            )
 
-                onSuccess()
-            } catch (e: Exception) {
-                _registration.value = _registration.value.copy(errorMessage = "Ошибка регистрации: ${e.message}")
+            authUseCase.registration(registrationRequest).collect { response ->
+                when(response) {
+                    is NetworkResponse.Error -> {
+                        setLoading(false)
+                        setErrorMessage(response.errorMessage)
+                    }
+                    is NetworkResponse.Success -> {
+                        setLoading(false)
+                        registrationScreenState.value = registrationScreenState.value.copy(isSignedIn = true)
+                        onSuccess()
+                    }
+                    is NetworkResponse.Loading -> {
+                        setLoading(true)
+                    }
+                }
             }
         }
     }
