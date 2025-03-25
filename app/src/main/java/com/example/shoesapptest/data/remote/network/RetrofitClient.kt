@@ -8,7 +8,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 
 object RetrofitClient {
-    private const val URL = "http://26.197.138.194:8080"
+    private const val URL = "http://192.168.4.56:8080"
     private val retrofit = Retrofit.Builder()
         .baseUrl(URL)
         .addConverterFactory(Json.asConverterFactory("application/json; charset=UTF8".toMediaType()))

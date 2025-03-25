@@ -1,11 +1,9 @@
 package com.example.shoesapptest.screen.regscreen
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shoesapptest.data.remote.network.auth.RegistrationRequest
+import com.example.shoesapptest.data.remote.network.dto.RegistrationRequest
 import com.example.shoesapptest.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
@@ -39,7 +37,6 @@ class RegistrationViewModel(
                         password = _registration.value.password
                     )
                 )
-
 
                 onSuccess()
             } catch (e: Exception) {

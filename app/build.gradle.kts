@@ -42,13 +42,15 @@ android {
 
 dependencies {
 
-
+    implementation("io.insert-koin:koin-compose:4.1.0-Beta5")
+    implementation("io.insert-koin:koin-compose-viewmodel:4.1.0-Beta5")
     implementation(libs.androidx.core.ktx)
-    implementation("androidx.datastore:datastore-preferences:1.1.3")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    //noinspection UseTomlInstead
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
