@@ -13,16 +13,20 @@ import com.example.shoesapptest.common.CommonButton
 fun AuthButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     content: @Composable () -> Unit
-){
+) {
     CommonButton(
         onClick = onClick,
+        modifier = modifier.padding(50.dp),
+        enabled = enabled,
         buttonColors = ButtonColors(
             contentColor = MatuleTheme.colors.background,
             containerColor = MatuleTheme.colors.accent,
             disabledContainerColor = MatuleTheme.colors.accent,
             disabledContentColor = MatuleTheme.colors.accent
-        ),
-        modifier = modifier.padding(50.dp)
-        ) { content()}
+        )
+    ) {
+        content()
+    }
 }

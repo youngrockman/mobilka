@@ -6,6 +6,7 @@ import com.example.shoesapptest.data.remote.network.auth.AuthRemoteSource
 import com.example.shoesapptest.data.repository.AuthRepository
 import com.example.shoesapptest.domain.usecase.AuthUseCase
 import com.example.shoesapptest.screen.regscreen.RegistrationViewModel
+import com.example.shoesapptest.screen.signin.SignInViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -15,4 +16,5 @@ val appModules = module {
     single <AuthRepository> {AuthRepository(get()) }
     single { AuthUseCase(get (),get()) }
     viewModel { RegistrationViewModel(get()) }
+    viewModel { SignInViewModel(get())}
 }

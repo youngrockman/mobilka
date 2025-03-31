@@ -16,13 +16,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,19 +45,36 @@ import androidx.navigation.NavController
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
 import com.example.shoesapptest.common.CommonButton
-import com.example.shoesapptest.screen.signin.SignInViewMode
+import com.example.shoesapptest.screen.signin.SignInViewModel
 import com.example.shoesapptest.screen.signin.component.AuthButton
 import com.example.shoesapptest.screen.signin.component.AuthTextField
 import com.example.shoesapptest.screen.signin.component.TitleWithSubtitleText
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SigninScreen(
+fun SignInScreen(
     onNavigationToRegScreen: () -> Unit,
+    onSignInSuccess: () -> Unit,
     navController: NavController
 ) {
-    val signInViewModel: SignInViewMode = viewModel()
+    val viewModel: SignInViewModel = koinViewModel()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.signInState.value.isSignIn) {
+        if (viewModel.signInState.value.isSignIn) {
+            onSignInSuccess()
+        }
+    }
+
+    LaunchedEffect(viewModel.signInState.value.errorMessage) {
+        viewModel.signInState.value.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.setErrorMessage(null)
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             Row(
                 modifier = Modifier
@@ -92,17 +113,24 @@ fun SigninScreen(
     ) { paddingValues ->
         SignInContent(
             paddingValues = paddingValues,
-            signInViewMode = signInViewModel,
+            viewModel = viewModel,
             navController = navController
         )
     }
 }
 
 @Composable
-fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode, navController: NavController) {
-    val signInState = signInViewMode.signInState
+fun SignInContent(
+    paddingValues: PaddingValues,
+    viewModel: SignInViewModel,
+    navController: NavController
+) {
+    val state = viewModel.signInState.value
+
     Column(
-        modifier = Modifier.padding(paddingValues = paddingValues),
+        modifier = Modifier
+            .padding(paddingValues)
+            .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         TitleWithSubtitleText(
@@ -112,23 +140,22 @@ fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode, 
         Spacer(modifier = Modifier.height(35.dp))
 
         AuthTextField(
-            value = signInState.value.email,
-            onChangeValue = { signInViewMode.setEmail(it) },
-            isError = signInViewMode.emailHasError.value,
+            value = state.email,
+            onChangeValue = { viewModel.setEmail(it) },
+            isError = viewModel.emailHasError.value,
             supportingText = { Text(text = stringResource(R.string.LoginError))},
             placeholder = { Text(text = stringResource(R.string.template_email)) },
             label = { Text(text = stringResource(R.string.email)) }
         )
 
         AuthTextField(
-            value = signInState.value.password,
-            onChangeValue = { signInViewMode.setPassword(it) },
+            value = state.password,
+            onChangeValue = { viewModel.setPassword(it) },
             isError = false,
             supportingText = { Text(text = "Неверный пароль")},
             placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
             label = { Text(text = stringResource(R.string.Password)) }
         )
-
 
         Text(
             text = "Забыл пароль",
@@ -140,12 +167,20 @@ fun SignInContent(paddingValues: PaddingValues, signInViewMode: SignInViewMode, 
                 .padding(top = 8.dp)
         )
 
-        AuthButton(onClick = {}) {
-            Text(stringResource(R.string.Sign_In))
+        AuthButton(
+            onClick = { viewModel.signIn {} },
+            enabled = !viewModel.emailHasError.value &&
+                    state.email.isNotEmpty() &&
+                    state.password.isNotEmpty()
+        ) {
+            if (state.isLoading) {
+                CircularProgressIndicator()
+            } else {
+                Text(stringResource(R.string.Sign_In))
+            }
         }
     }
 }
-
 
 
 

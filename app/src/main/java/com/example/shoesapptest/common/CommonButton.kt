@@ -21,6 +21,7 @@ fun CommonButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     buttonColors: ButtonColors,
+    enabled: Boolean = true,
     content: @Composable () -> Unit)
 {
     Button(
