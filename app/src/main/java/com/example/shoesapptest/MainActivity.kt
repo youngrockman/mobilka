@@ -14,6 +14,8 @@ import com.example.shoesapptest.data.remote.network.RetrofitClient
 import com.example.shoesapptest.data.repository.AuthRepository
 import com.example.shoesapptest.di.appModules
 import com.example.shoesapptest.domain.usecase.AuthUseCase
+import com.example.shoesapptest.screen.StartsScreens.FirstScreen
+import com.example.shoesapptest.screen.StartsScreens.SlideScreen
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
 import org.koin.core.context.GlobalContext
@@ -26,7 +28,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MatuleTheme {
-
                 if (GlobalContext.getOrNull() == null) {
                     startKoin {
                         modules(appModules)
@@ -37,8 +38,24 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Screen.SignIn.route
+                    startDestination = Screen.FirstScreen.route
                 ) {
+                    composable(Screen.FirstScreen.route) {
+                        FirstScreen {
+                            navController.navigate(Screen.SlideScreen.route) {
+                                popUpTo(Screen.FirstScreen.route) { inclusive = true }
+                            }
+                        }
+                    }
+
+                    composable(Screen.SlideScreen.route) {
+                        SlideScreen {
+                            navController.navigate(Screen.SignIn.route) {
+                                popUpTo(Screen.SlideScreen.route) { inclusive = true }
+                            }
+                        }
+                    }
+
                     composable(Screen.SignIn.route) {
                         SigninScreen(
                             onNavigationToRegScreen = {
@@ -47,6 +64,7 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
+
                     composable(Screen.ForgotPass.route) {
                         ForgotPassScreen(
                             onNavigateToSignInScreen = {
@@ -54,6 +72,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+
                     composable(Screen.Registration.route) {
                         RegisterAccountScreen(
                             onNavigationToSigninScreen = {

@@ -34,10 +34,10 @@ import com.example.shoesapptest.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun FirstCreen(OnnavifateToSliderScreen: () -> Unit) {
+fun FirstScreen(OnnavifateToSlideScreen: () -> Unit) {
     LaunchedEffect(Unit) {
         delay(3000)
-        OnnavifateToSliderScreen()
+        OnnavifateToSlideScreen()
     }
 
     Box(
@@ -56,7 +56,7 @@ fun FirstCreen(OnnavifateToSliderScreen: () -> Unit) {
 
 
 @Composable
-fun SlidenScreen(onNavigateToAuthScreen: () -> Unit) {
+fun SlideScreen(onNavigateToAuthScreen: () -> Unit) {
     var sliderValue by remember { mutableStateOf(0f) }
     val textList = listOf("ДОБРО ПОЖАЛОВАТЬ", "Начнем путешествие", "У вас есть сила, чтобы")
     val textListSecond = listOf("", "Умная, великолепная и модная коллекция Изучите сейчас", "В вашей комнате много красивых и привлекательных растений")

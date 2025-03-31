@@ -8,4 +8,6 @@ import retrofit2.http.POST
 interface AuthRemoteSource {
     @POST("/registration")
     suspend fun  registration(@Body registrationRequest: RegistrationRequest): RegistrationResponse
+
+
 }
