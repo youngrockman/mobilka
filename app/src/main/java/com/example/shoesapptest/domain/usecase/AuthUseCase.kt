@@ -7,6 +7,8 @@ import com.example.shoesapptest.data.remote.network.dto.AuthorizationResponse
 import com.example.shoesapptest.data.remote.network.dto.RegistrationRequest
 import com.example.shoesapptest.data.remote.network.dto.RegistrationResponse
 import com.example.shoesapptest.data.repository.AuthRepository
+import com.example.shoesapptest.domain.usecase.validator.EmailValidator
+import com.example.shoesapptest.domain.usecase.validator.PasswordValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -16,15 +18,22 @@ class AuthUseCase(private val dataStore: DataStore, private val authRepository: 
     suspend fun registration(registrationRequest: RegistrationRequest): Flow<NetworkResponse<RegistrationResponse>> = flow {
         try {
             emit(NetworkResponse.Loading)
+
+
+            if (!EmailValidator().validate(registrationRequest.email)) {
+                emit(NetworkResponse.Error("Invalid email format"))
+                return@flow
+            }
+            if (!PasswordValidator().validate(registrationRequest.password)) {
+                emit(NetworkResponse.Error("Password must contain: 8+ chars, 1 uppercase, 1 digit, 1 special char"))
+                return@flow
+            }
+
             val result = authRepository.registration(registrationRequest)
             dataStore.setToken(result.second)
             emit(NetworkResponse.Success(result))
         } catch (e: Exception) {
-            e.message?.let {
-                emit(NetworkResponse.Error(it))
-                return@flow
-            }
-            emit(NetworkResponse.Error("Unknown Error"))
+            emit(NetworkResponse.Error(e.message ?: "Unknown Error"))
         }
     }
 
@@ -35,11 +44,7 @@ class AuthUseCase(private val dataStore: DataStore, private val authRepository: 
             dataStore.setToken(result.token)
             emit(NetworkResponse.Success(result))
         } catch (e: Exception) {
-            e.message?.let {
-                emit(NetworkResponse.Error(it))
-                return@flow
-            }
-            emit(NetworkResponse.Error("Unknown Error"))
+            emit(NetworkResponse.Error(e.message ?: "Unknown Error"))
         }
     }
 }
