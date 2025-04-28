@@ -1,12 +1,14 @@
 package com.example.shoesapptest
 
-import android.os.Bundle
+
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.bundle.Bundle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pypypy.ui.screen.home.HomeScreenHast
 import com.example.shoesapp.ui.screen.SignInScreen
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.screen.StartsScreens.FirstScreen
@@ -49,11 +51,15 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(Screen.Registration.route)
                             },
                             onSignInSuccess = {
-                                // Добавить навигацию после успешного входа
+                                navController.navigate(Screen.Home.route) {
+                                    popUpTo(Screen.SignIn.route) { inclusive = true }
+                                }
                             },
                             navController = navController
                         )
                     }
+
+
 
                     composable(Screen.ForgotPass.route) {
                         ForgotPassScreen(
@@ -69,6 +75,11 @@ class MainActivity : ComponentActivity() {
                                 navController.popBackStack()
                             }
                         )
+                    }
+
+
+                    composable(Screen.Home.route) {
+                        HomeScreenHast()
                     }
                 }
             }

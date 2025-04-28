@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
+import com.example.shoesapptest.Screen
 import com.example.shoesapptest.common.CommonButton
 import com.example.shoesapptest.screen.signin.SignInViewModel
 import com.example.shoesapptest.screen.signin.component.AuthButton
@@ -167,21 +168,19 @@ fun SignInContent(
                 .padding(top = 8.dp)
         )
 
+
         AuthButton(
-            onClick = { viewModel.signIn {} },
-            enabled = !viewModel.emailHasError.value &&
-                    state.email.isNotEmpty() &&
-                    state.password.isNotEmpty()
+            onClick = {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.SignIn.route) { inclusive = true }
+                }
+            },
+            enabled = true
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator()
-            } else {
-                Text(stringResource(R.string.Sign_In))
-            }
+            Text(stringResource(R.string.Sign_In))
         }
     }
 }
-
 
 
 

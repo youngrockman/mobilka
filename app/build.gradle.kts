@@ -48,7 +48,6 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
-    //noinspection UseTomlInstead
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.lifecycle.runtime.ktx)
