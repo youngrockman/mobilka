@@ -1,9 +1,7 @@
 package com.example.shoesapptest.screen.home.component
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +17,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -33,6 +30,7 @@ fun ProductItem(
     price: String,
     imageRes: Painter,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier
 
 
     ) {
@@ -54,7 +52,7 @@ fun ProductItem(
                 .size(24.dp)
         ) {
             Image(
-                painter = painterResource(R.drawable.icon),
+                painter = painterResource(R.drawable.red_heart),
                 contentDescription = "Favorite",
                 modifier = Modifier.size(28.dp)
             )
@@ -109,7 +107,7 @@ fun ProductItem(
                     modifier = Modifier.size(36.dp)
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.group_1072),
+                        painter = painterResource(R.drawable.add_plus),
                         contentDescription = "Add to cart",
                         modifier = Modifier
                             .size(36.dp)

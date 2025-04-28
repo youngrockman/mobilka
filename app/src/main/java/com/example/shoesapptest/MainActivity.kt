@@ -14,6 +14,7 @@ import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.screen.StartsScreens.FirstScreen
 import com.example.shoesapptest.screen.StartsScreens.SlideScreen
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
+import com.example.shoesapptest.screen.popular.PopularScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
 
 class MainActivity : ComponentActivity() {
@@ -79,8 +80,13 @@ class MainActivity : ComponentActivity() {
 
 
                     composable(Screen.Home.route) {
-                        HomeScreenHast()
+                        HomeScreenHast(navController)
                     }
+
+                    composable(Screen.Popular.route) {
+                        PopularScreen(navController)
+                    }
+
                 }
             }
         }

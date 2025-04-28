@@ -1,4 +1,4 @@
-package com.example.shoesapptest.screen.home.popular
+package com.example.shoesapptest.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
