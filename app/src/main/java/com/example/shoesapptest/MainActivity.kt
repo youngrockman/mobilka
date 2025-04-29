@@ -17,6 +17,7 @@ import com.example.shoesapptest.screen.StartsScreens.FirstScreen
 import com.example.shoesapptest.screen.StartsScreens.SlideScreen
 import com.example.shoesapptest.screen.favorite.FavoriteScreen
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
+import com.example.shoesapptest.screen.listing.OutdoorScreen
 import com.example.shoesapptest.screen.popular.PopularScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
 
@@ -96,6 +97,9 @@ class MainActivity : ComponentActivity() {
 
                     composable(Screen.Favorite.route) {
                         FavoriteScreen(navController)
+                    }
+                    composable(Screen.Outdoor.route) {
+                        OutdoorScreen(navController)
                     }
 
                 }

@@ -1,5 +1,7 @@
 package com.example.shoesapptest.screen.StartsScreens
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -116,6 +119,7 @@ fun SlideScreen(
                     Image(
                         painter = painterResource(id = pages[page].image),
                         contentDescription = null,
+                        contentScale = ContentScale.Fit, // Вмещает изображение в контейнер
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .height(400.dp)
@@ -150,23 +154,40 @@ fun SlideScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .height(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = 32.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             repeat(pages.size) { index ->
+                val isSelected = pagerState.currentPage == index
+
+                val width by animateDpAsState(
+                    targetValue = if (isSelected) 40.dp else 16.dp,
+                    label = "indicator_width"
+                )
+
+                val color by animateColorAsState(
+                    targetValue = if (isSelected) Color.White else Color.White.copy(alpha = 0.4f),
+                    label = "indicator_color"
+                )
+
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
+                        .height(6.dp)
+                        .width(width)
                         .background(
-                            color = if (pagerState.currentPage == index) Color.White
-                            else Color.White.copy(alpha = 0.3f),
+                            color = color,
                             shape = RoundedCornerShape(50)
                         )
                 )
+
+                if (index != pages.lastIndex) {
+                    Spacer(modifier = Modifier.width(8.dp)) // Расстояние между линиями
+                }
             }
         }
+
+
 
         Spacer(modifier = Modifier.height(40.dp))
 

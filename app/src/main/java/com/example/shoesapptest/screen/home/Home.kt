@@ -133,7 +133,11 @@ fun HomeScreenContent(
             LazyRow {
                 items(listOf("Всё", "Outdoor", "Tennis", "Прикол", "Тыкни меня")) { category ->
                     Button(
-                        onClick = {},
+                        onClick = {
+                            if (category == "Outdoor") {
+                                navController.navigate(Screen.Outdoor.route)
+                            }
+                        },
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .height(40.dp),
