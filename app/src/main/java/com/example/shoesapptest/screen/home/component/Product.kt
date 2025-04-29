@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import com.example.shoesapptest.R
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,9 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-import com.example.shoesapp.ui.theme.MatuleTheme.colors
-
+import com.example.shoesapp.ui.theme.MatuleTheme
+import com.example.shoesapptest.R
 
 @Composable
 fun ProductItem(
@@ -30,40 +29,48 @@ fun ProductItem(
     price: String,
     imageRes: Painter,
     onClick: () -> Unit,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
-
-
-    ) {
+) {
     Column(
-        modifier = Modifier
-            .width(160.dp)
-            .height(186.5.dp)
+        modifier = modifier
+            .height(220.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
-            .clickable(onClick = onClick)
-            .aspectRatio(1f)
-            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
+            .clickable(onClick = onClick),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(
-            onClick = {},
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .size(24.dp)
+                .fillMaxWidth()
+                .weight(1f)
         ) {
             Image(
-                painter = painterResource(R.drawable.red_heart),
-                contentDescription = "Favorite",
-                modifier = Modifier.size(28.dp)
+                painter = imageRes,
+                contentDescription = name,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             )
-        }
-        Image(
-            painter = imageRes,
-            contentDescription = name,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.size(114.dp, 53.dp).padding(horizontal = 12.dp)
-        )
 
+            IconButton(
+                onClick = onFavoriteClick,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ) {
+                Image(
+                    painter = painterResource(
+                        if (isFavorite) R.drawable.red_heart
+                        else R.drawable.heart
+                    ),
+                    contentDescription = "Избранное",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -71,15 +78,13 @@ fun ProductItem(
                 .padding(horizontal = 12.dp)
                 .padding(bottom = 12.dp)
         ) {
-
             Text(
                 text = title,
-                color = colors.accent,
+                color = MatuleTheme.colors.accent,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
-
 
             Text(
                 text = name,
@@ -89,11 +94,10 @@ fun ProductItem(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-
             Row(
-                modifier = Modifier.align(Alignment.Start).fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = price,
@@ -103,14 +107,13 @@ fun ProductItem(
                 )
 
                 IconButton(
-                    onClick = { },
+                    onClick = { /* Добавить в корзину */ },
                     modifier = Modifier.size(36.dp)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.add_plus),
                         contentDescription = "Add to cart",
-                        modifier = Modifier
-                            .size(36.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

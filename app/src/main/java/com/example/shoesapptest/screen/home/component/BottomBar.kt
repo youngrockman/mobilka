@@ -16,11 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.shoesapptest.R
+import com.example.shoesapptest.Screen
+import com.example.shoesapptest.screen.favorite.FavoriteScreen
 
 
 @Composable
-fun BottomBar() {
+fun BottomBar(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter
@@ -50,7 +53,7 @@ fun BottomBar() {
                         "Дом",
                         Modifier.size(28.dp))
                 }
-                IconButton(onClick = {  }) {
+                IconButton(onClick = { navController.navigate(Screen.Favorite.route) }) {
                     Image(
                         painter = painterResource(R.drawable.heart),
                         "Избранное",

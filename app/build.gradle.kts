@@ -41,7 +41,6 @@ android {
 }
 
 dependencies {
-
     implementation("io.insert-koin:koin-compose:4.1.0-Beta5")
     implementation("io.insert-koin:koin-compose-viewmodel:4.1.0-Beta5")
     implementation(libs.androidx.core.ktx)

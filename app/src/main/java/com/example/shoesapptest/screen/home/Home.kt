@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -66,7 +67,7 @@ fun HomeScreenHast(navController: NavHostController) {
             )
         },
 
-        bottomBar = { BottomBar() }
+        bottomBar = { BottomBar(navController) }
     ) {
             paddingValues ->
         HomeScreenContent(paddingValues = paddingValues,
@@ -81,6 +82,7 @@ fun HomeScreenContent(
     viewModel: PopularSneakersViewModel,
     navController: NavHostController
 ) {
+    val favoriteItems = remember { mutableStateListOf<Int>() }
     val message = remember { mutableStateOf("") }
 
     Column(
@@ -169,13 +171,23 @@ fun HomeScreenContent(
                 modifier = Modifier.padding(top = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(2) {
+                items(2) { index ->
+                    val isFavorite = favoriteItems.contains(index)
                     ProductItem(
                         title = "Best Seller",
                         name = "Nike Air Max",
                         price = "₽752",
                         imageRes = painterResource(R.drawable.mainsneakers),
-                        onClick = {}
+                        onClick = {},
+                        isFavorite = isFavorite,
+                        onFavoriteClick = {
+                            if (isFavorite) {
+                                favoriteItems.remove(index)
+                            } else {
+                                favoriteItems.add(index)
+                            }
+                        },
+                        modifier = Modifier.width(160.dp)
                     )
                 }
             }

@@ -4,6 +4,7 @@ package com.example.shoesapptest
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.bundle.Bundle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,8 +12,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pypypy.ui.screen.home.HomeScreenHast
 import com.example.shoesapp.ui.screen.SignInScreen
 import com.example.shoesapp.ui.theme.MatuleTheme
+import com.example.shoesapptest.data.local.DataStoreOnBoarding
 import com.example.shoesapptest.screen.StartsScreens.FirstScreen
 import com.example.shoesapptest.screen.StartsScreens.SlideScreen
+import com.example.shoesapptest.screen.favorite.FavoriteScreen
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
 import com.example.shoesapptest.screen.popular.PopularScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
@@ -25,6 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MatuleTheme {
                 val navController = rememberNavController()
+                val dataStore = DataStoreOnBoarding(LocalContext.current)
 
                 NavHost(
                     navController = navController,
@@ -39,11 +43,14 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(Screen.SlideScreen.route) {
-                        SlideScreen {
-                            navController.navigate(Screen.SignIn.route) {
-                                popUpTo(Screen.SlideScreen.route) { inclusive = true }
-                            }
-                        }
+                        SlideScreen(
+                            onNavigateToAuthScreen = {
+                                navController.navigate(Screen.SignIn.route) {
+                                    popUpTo(Screen.SlideScreen.route) { inclusive = true }
+                                }
+                            },
+                            dataStore = dataStore
+                        )
                     }
 
                     composable(Screen.SignIn.route) {
@@ -85,6 +92,10 @@ class MainActivity : ComponentActivity() {
 
                     composable(Screen.Popular.route) {
                         PopularScreen(navController)
+                    }
+
+                    composable(Screen.Favorite.route) {
+                        FavoriteScreen(navController)
                     }
 
                 }
