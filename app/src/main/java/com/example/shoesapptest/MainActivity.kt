@@ -1,6 +1,7 @@
 package com.example.shoesapptest
 
 
+import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,8 +21,10 @@ import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
 import com.example.shoesapptest.screen.listing.OutdoorScreen
 import com.example.shoesapptest.screen.popular.PopularScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
+import com.example.shoesapptest.screen.verification.VerificationScreen
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("ComposableDestinationInComposeScope")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -72,10 +75,13 @@ class MainActivity : ComponentActivity() {
 
                     composable(Screen.ForgotPass.route) {
                         ForgotPassScreen(
-                            onNavigateToSignInScreen = {
-                                navController.popBackStack()
-                            }
+                            onNavigateToSignInScreen = { navController.popBackStack() },
+                            navController = navController
                         )
+                    }
+
+                    composable(Screen.Verification.route) {
+                        VerificationScreen(navController = navController)
                     }
 
                     composable(Screen.Registration.route) {
@@ -100,8 +106,10 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(Screen.Outdoor.route) {
                         OutdoorScreen(navController)
-                    }
 
+
+
+                    }
                 }
             }
         }

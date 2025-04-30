@@ -16,6 +16,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,15 +29,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
+import com.example.shoesapptest.Screen
 import com.example.shoesapptest.screen.forgotpassword.component.ForgotPassField
 import com.example.shoesapptest.screen.forgotpassword.component.SendButton
 import com.example.shoesapptest.screen.signin.component.TitleWithSubtitleText
-
+import kotlinx.coroutines.delay
 
 @Composable
-fun ForgotPassScreen(onNavigateToSignInScreen: () -> Unit) {
+fun ForgotPassScreen(
+    onNavigateToSignInScreen: () -> Unit,
+    navController: NavController
+) {
     val forgotPassViewModel: ForgotPassViewModel = viewModel()
     val showDialog = remember { mutableStateOf(false) }
 
@@ -48,7 +54,7 @@ fun ForgotPassScreen(onNavigateToSignInScreen: () -> Unit) {
                     .fillMaxWidth()
                     .height(40.dp)
             ) {
-                IconButton(onClick = {}) {
+                IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         painter = painterResource(R.drawable.back_arrow),
                         contentDescription = null
@@ -57,12 +63,18 @@ fun ForgotPassScreen(onNavigateToSignInScreen: () -> Unit) {
             }
         }
     ) { paddingValues ->
-        ForgotPassContent(paddingValues, showDialog, forgotPassViewModel)
+        ForgotPassContent(
+            paddingValues = paddingValues,
+            showDialog = showDialog,
+            forgotPassViewModel = forgotPassViewModel
+        )
     }
 
-
     if (showDialog.value) {
-        EmailSentDialog(onDismiss = { showDialog.value = false })
+        EmailSentDialog(
+            onDismiss = { showDialog.value = false },
+            navController = navController
+        )
     }
 }
 
@@ -89,23 +101,30 @@ fun ForgotPassContent(
 
         ForgotPassField(
             value = changePass.value.email,
-            onChangeValue = {forgotPassViewModel.setEmail(it)},
+            onChangeValue = { forgotPassViewModel.setEmail(it) },
             isError = forgotPassViewModel.emailHasError.value,
             supportingText = { Text(text = stringResource(R.string.LoginError)) },
-            placeholder = { Text(text = stringResource(R.string.template_email))},
-            label = { Text(text = stringResource(R.string.email))}
+            placeholder = { Text(text = stringResource(R.string.template_email)) },
+            label = { Text(text = stringResource(R.string.email)) }
         )
 
-
-        SendButton(onClick = {showDialog.value = true}) {
+        SendButton(onClick = { showDialog.value = true }) {
             Text(text = "Отправить")
         }
     }
 }
 
-
 @Composable
-fun EmailSentDialog(onDismiss: () -> Unit) {
+fun EmailSentDialog(
+    onDismiss: () -> Unit,
+    navController: NavController
+) {
+    LaunchedEffect(Unit) {
+        delay(10000L)
+        onDismiss()
+        navController.navigate(Screen.Verification.route)
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {},
@@ -143,19 +162,3 @@ fun EmailSentDialog(onDismiss: () -> Unit) {
         containerColor = Color.White
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

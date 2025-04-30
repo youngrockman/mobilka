@@ -11,4 +11,5 @@ sealed class Screen(val route: String) {
     object Popular : Screen("popular")
     object Favorite : Screen("favorite")
     object Outdoor : Screen("listing")
+    object Verification : Screen("verification")
 }
