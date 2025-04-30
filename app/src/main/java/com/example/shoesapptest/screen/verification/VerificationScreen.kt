@@ -45,7 +45,7 @@ fun VerificationScreen(
     navController: NavController,
     email: String = "user@example.com"
 ) {
-    var timer by remember { mutableStateOf(3) }
+    var timer by remember { mutableStateOf(30) }
     val otpFields = remember { Array(5) { mutableStateOf("") } }
 
     LaunchedEffect(Unit) {
