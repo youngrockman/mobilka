@@ -153,19 +153,24 @@ fun SignInContent(
             value = state.password,
             onChangeValue = { viewModel.setPassword(it) },
             isError = false,
+            isPassword = true,
             supportingText = { Text(text = "Неверный пароль")},
             placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
             label = { Text(text = stringResource(R.string.Password)) }
         )
 
         Text(
-            text = "Забыл пароль",
-            style = MatuleTheme.typography.bodyRegular16.copy(color = MatuleTheme.colors.text),
+            text = "Восстановить",
             modifier = Modifier
                 .clickable {
                     navController.navigate("forgotpass")
                 }
                 .padding(top = 8.dp)
+                .fillMaxWidth(),
+            style = MatuleTheme.typography.bodyRegular16.copy(
+                color = MatuleTheme.colors.subTextDark,
+                textAlign = TextAlign.End
+            )
         )
 
 

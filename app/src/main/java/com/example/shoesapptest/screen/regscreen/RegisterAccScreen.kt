@@ -155,6 +155,7 @@ fun RegisterAccountScreen(
                 value = state.password,
                 onChangeValue = { viewModel.setPassword(it) },
                 isError = false,
+                isPassword = true,
                 supportingText = { Text(text = stringResource(R.string.PasswordError)) },
                 placeholder = { Text(text = stringResource(R.string.PasswordPlaceHolder)) },
                 label = { Text(text = stringResource(R.string.Password)) }

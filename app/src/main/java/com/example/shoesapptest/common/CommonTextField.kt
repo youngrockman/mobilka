@@ -31,38 +31,38 @@ fun CommonTextField(
     modifier: Modifier = Modifier,
     isError: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailingIcon: @Composable ()-> Unit = {},
-    supportingText: @Composable ()-> Unit = {},
-    placeHolder: @Composable ()-> Unit = {},
-){
+    trailingIcon: @Composable () -> Unit = {},
+    supportingText: @Composable () -> Unit = {},
+    placeHolder: @Composable () -> Unit = {},
+) {
+    val interactionSource = remember { MutableInteractionSource() }
 
-    val interaction = remember { MutableInteractionSource() }
     BasicTextField(
         value = value,
-        onValueChange = { onChangeValue(it) },
+        onValueChange = onChangeValue,
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(MatuleTheme.colors.background)
-    ){ innerTextField ->
+            .background(MatuleTheme.colors.background),
+        visualTransformation = visualTransformation,
+    ) { innerTextField ->
         TextFieldDefaults.DecorationBox(
             value = value,
-            singleLine = true,
             innerTextField = innerTextField,
             enabled = true,
+            singleLine = true,
             visualTransformation = visualTransformation,
-            interactionSource = interaction,
+            interactionSource = interactionSource,
             trailingIcon = trailingIcon,
             isError = isError,
             supportingText = if (isError) supportingText else null,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MatuleTheme.colors.background,
-                disabledContainerColor = MatuleTheme.colors.background,
                 unfocusedContainerColor = MatuleTheme.colors.background,
+                disabledContainerColor = MatuleTheme.colors.background,
                 errorContainerColor = MatuleTheme.colors.background,
-                unfocusedIndicatorColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
                 errorIndicatorColor = Color.Red
             ),
             placeholder = placeHolder

@@ -76,7 +76,7 @@ fun VerificationScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally // Основное выравнивание по центру
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Заголовок по центру
             Text(
@@ -85,7 +85,7 @@ fun VerificationScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                textAlign = TextAlign.Center // Явное выравнивание текста
+                textAlign = TextAlign.Center
             )
 
 
