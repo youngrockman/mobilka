@@ -89,6 +89,7 @@ fun HomeScreenContent(
         modifier = Modifier
             .padding(paddingValues)
             .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp)
     ) {
         Row(
             modifier = Modifier
@@ -97,7 +98,7 @@ fun HomeScreenContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).padding(top = 16.dp, bottom = 24.dp),
                 value = message.value,
                 onValueChange = { message.value = it },
                 placeholder = { Text("Поиск") },
@@ -122,7 +123,7 @@ fun HomeScreenContent(
             }
         }
 
-        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
             Text(
                 text = "Категории",
                 fontWeight = FontWeight.Medium,
@@ -197,7 +198,7 @@ fun HomeScreenContent(
             }
         }
 
-        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+        Column(modifier = Modifier.padding(bottom = 32.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -218,7 +219,7 @@ fun HomeScreenContent(
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth()
-                    .height(160.dp)
+                    .height(120.dp)
             ) {
                 Image(
                     painter = painterResource(R.drawable.activesale),
