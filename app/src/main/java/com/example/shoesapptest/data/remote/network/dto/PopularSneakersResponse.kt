@@ -5,9 +5,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PopularSneakersResponse(
     val id: Int,
-    var productName: String,
-    var cost: String,
-    var count: Int,
-    var photo: String,
-    var description: String
+    val name: String,
+    val description: String,
+    val price: Double,
+    val imageUrl: String,
+    val category: String,
+    val isPopular: Boolean,
+    val isFavorite: Boolean = false
 )
