@@ -3,6 +3,7 @@
 
 package com.example.pypypy.ui.screen.home
 
+import ProductItem
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -28,10 +29,14 @@ import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,8 +53,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
 import com.example.shoesapptest.Screen
+import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
+import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
 import com.example.shoesapptest.screen.home.component.BottomBar
-import com.example.shoesapptest.screen.home.component.ProductItem
 import com.example.shoesapptest.screen.home.component.TopPanel
 import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 
@@ -82,8 +88,12 @@ fun HomeScreenContent(
     viewModel: PopularSneakersViewModel,
     navController: NavHostController
 ) {
-    val favoriteItems = remember { mutableStateListOf<Int>() }
+    val sneakersState by viewModel.sneakersState.collectAsState()
     val message = remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchSneakers()
+    }
 
     Column(
         modifier = Modifier
@@ -98,11 +108,16 @@ fun HomeScreenContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
-                modifier = Modifier.weight(1f).padding(top = 16.dp, bottom = 24.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 16.dp, bottom = 24.dp),
                 value = message.value,
                 onValueChange = { message.value = it },
                 placeholder = { Text("Поиск") },
-                leadingIcon = { Icon(painterResource(R.drawable.lupa), "Поиск") },
+                leadingIcon = { Icon(
+                    painter = painterResource(R.drawable.lupa),
+                    contentDescription = "Поиск"
+                ) },
                 shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MatuleTheme.colors.block,
@@ -114,14 +129,15 @@ fun HomeScreenContent(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            IconButton(onClick = {}) {
-                Image(
+            IconButton(onClick = { }) {
+                Icon(
                     painter = painterResource(R.drawable.sort),
                     contentDescription = "Сортировка",
                     modifier = Modifier.size(48.dp)
                 )
             }
         }
+
 
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
             Text(
@@ -132,11 +148,13 @@ fun HomeScreenContent(
             )
 
             LazyRow {
-                items(listOf("Всё", "Outdoor", "Tennis", "Прикол", "Тыкни меня")) { category ->
+                items(listOf("Всё", "Outdoor", "Tennis", "Basketball", "Running")) { category ->
                     Button(
                         onClick = {
-                            if (category == "Outdoor") {
-                                navController.navigate(Screen.Outdoor.route)
+                            when (category) {
+                                "Outdoor" -> navController.navigate(Screen.Outdoor.route)
+                                //"Basketball" -> navController.navigate(Screen.Basketball.route)
+
                             }
                         },
                         modifier = Modifier
@@ -154,49 +172,71 @@ fun HomeScreenContent(
             }
         }
 
-        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Популярное",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal
-                )
-                Text(
-                    text = "Все",
-                    modifier = Modifier.clickable { navController.navigate(Screen.Popular.route) },
-                    fontSize = 12.sp,
-                    color = MatuleTheme.colors.accent
-                )
-            }
 
-            LazyRow(
-                modifier = Modifier.padding(top = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(2) { index ->
-                    val isFavorite = favoriteItems.contains(index)
-                    ProductItem(
-                        title = "Best Seller",
-                        name = "Nike Air Max",
-                        price = "₽752",
-                        imageRes = painterResource(R.drawable.mainsneakers),
-                        onClick = {},
-                        isFavorite = isFavorite,
-                        onFavoriteClick = {
-                            if (isFavorite) {
-                                favoriteItems.remove(index)
-                            } else {
-                                favoriteItems.add(index)
-                            }
-                        },
-                        modifier = Modifier.width(160.dp)
+        when (sneakersState) {
+            is NetworkResponseSneakers.Success -> {
+                val sneakers = (sneakersState as NetworkResponseSneakers.Success<List<PopularSneakersResponse>>).data
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Популярное",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                        Text(
+                            text = "Все",
+                            modifier = Modifier.clickable {
+                                navController.navigate(Screen.Popular.route)
+                            },
+                            fontSize = 12.sp,
+                            color = MatuleTheme.colors.accent
+                        )
+                    }
+
+                    LazyRow(
+                        modifier = Modifier.padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(sneakers) { sneaker ->
+                            ProductItem(
+                                sneaker = sneaker,
+                                onItemClick = {
+                                    navController.navigate("details/${sneaker.id}")
+                                },
+                                onFavoriteClick = { id, isFavorite ->
+                                    viewModel.toggleFavorite(id, isFavorite)
+                                },
+                                onAddToCart = {
+
+                                },
+                                modifier = Modifier.width(160.dp)
+                            )
+                        }
+                    }
+                }
+            }
+            is NetworkResponseSneakers.Error -> {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Ошибка загрузки",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+            NetworkResponseSneakers.Loading -> {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
             }
         }
+
 
         Column(modifier = Modifier.padding(bottom = 32.dp)) {
             Row(

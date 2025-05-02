@@ -13,12 +13,12 @@ import kotlinx.coroutines.flow.map
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 class DataStore(private val context: Context) {
     val TOKEN_KEY = stringPreferencesKey("token_key")
-    val tokenFlow : Flow<String> = context.dataStore.data.map { pref ->
-        pref[TOKEN_KEY] ?: ""
-    }
+    val tokenFlow: Flow<String> = context.dataStore.data
+        .map { pref -> pref[TOKEN_KEY] ?: "" }
     suspend fun setToken(token: String){
         context.dataStore.edit { pref ->
             pref[TOKEN_KEY] = token
         }
     }
 }
+

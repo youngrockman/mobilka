@@ -176,13 +176,16 @@ fun SignInContent(
 
         AuthButton(
             onClick = {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.SignIn.route) { inclusive = true }
-                }
+                viewModel.signIn(onSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.SignIn.route) { inclusive = true }
+                    }
+                })
             },
-            enabled = true
+            enabled = !state.isLoading
         ) {
-            Text(stringResource(R.string.Sign_In))
+            if (state.isLoading) CircularProgressIndicator()
+            else Text(stringResource(R.string.Sign_In))
         }
     }
 }

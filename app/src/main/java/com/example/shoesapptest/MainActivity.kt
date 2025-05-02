@@ -10,6 +10,7 @@ import androidx.core.bundle.Bundle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.pypypy.ui.screen.home.HomeScreenHast
 import com.example.shoesapp.ui.screen.SignInScreen
 import com.example.shoesapp.ui.theme.MatuleTheme
@@ -106,8 +107,6 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(Screen.Outdoor.route) {
                         OutdoorScreen(navController)
-
-
 
                     }
                 }

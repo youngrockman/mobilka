@@ -1,5 +1,6 @@
 package com.example.shoesapptest.screen.listing
 
+import ProductItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,12 +21,15 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,9 +45,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
+import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
+import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
+import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 import com.example.shoesapptest.screen.home.component.BottomBar
-import com.example.shoesapptest.screen.home.component.ProductItem
 import com.example.shoesapptest.screen.listing.component.ProductItemData
+import org.koin.compose.viewmodel.koinViewModel
 import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -139,48 +146,55 @@ fun CategoryTabs(
 @Composable
 fun OutdoorContent(
     navController: NavController,
-    category: String
+    category: String,
+    viewModel: PopularSneakersViewModel = koinViewModel()
 ) {
-    val favoriteItems = remember { mutableStateListOf<Int>() }
-    val items = remember(category) {
-        List(6) { index ->
-            ProductItemData(
-                id = index,
-                title = "BEST SELLER",
-                name = "Nike Air Max",
-                price = "₽752.00",
-                imageRes = R.drawable.mainsneakers
-            )
-        }
+    val sneakersState by viewModel.sneakersState.collectAsState()
+    val favoritesState by viewModel.favoritesState.collectAsState()
+
+    LaunchedEffect(category) {
+        viewModel.fetchSneakersByCategory(category)
     }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(items, key = { it.id }) { item ->
-            val isFavorite = favoriteItems.contains(item.id)
-            ProductItem(
-                title = item.title,
-                name = item.name,
-                price = item.price,
-                imageRes = painterResource(item.imageRes),
-                onClick = {  },
-                isFavorite = isFavorite,
-                onFavoriteClick = {
-                    if (isFavorite) {
-                        favoriteItems.remove(item.id)
-                    } else {
-                        favoriteItems.add(item.id)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.85f)
-            )
+    when (val state = sneakersState) {
+        is NetworkResponseSneakers.Success -> {
+            val sneakersWithFavorites = state.data.map { sneaker ->
+                sneaker.copy(
+                    isFavorite = (favoritesState as? NetworkResponseSneakers.Success)?.data?.any { it.id == sneaker.id } == true
+                )
+            }
+
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(sneakersWithFavorites, key = { it.id }) { sneaker ->
+                    ProductItem(
+                        sneaker = sneaker,
+                        onItemClick = { navController.navigate("details/${sneaker.id}") },
+                        onFavoriteClick = { id, isFavorite ->
+                            viewModel.toggleFavorite(id, isFavorite)
+                        },
+                        onAddToCart = { /* Добавление в корзину */ },
+                        modifier = Modifier.aspectRatio(0.85f)
+                    )
+                }
+            }
+        }
+        is NetworkResponseSneakers.Error -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Ошибка: ${state.errorMessage}")
+            }
+        }
+
+        NetworkResponseSneakers.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator()
+            }
         }
     }
 }

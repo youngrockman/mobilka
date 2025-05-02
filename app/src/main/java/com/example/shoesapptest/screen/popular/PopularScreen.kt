@@ -1,6 +1,7 @@
 package com.example.shoesapptest.screen.popular
 
 import PopularItemData
+import ProductItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,8 +10,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -19,13 +24,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.shoesapptest.R
-import com.example.shoesapptest.screen.home.component.ProductItem
+import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
+import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
+import com.example.shoesapptest.screen.home.PopularSneakersViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PopularScreen(navController: NavController) {
-    val favoriteItems = remember { mutableStateListOf<Int>() }
+fun PopularScreen(navController: NavController, viewModel: PopularSneakersViewModel = koinViewModel()) {
+
+    val sneakersState by viewModel.sneakersState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchSneakers()
+    }
 
     Scaffold(
         topBar = {
@@ -72,30 +85,38 @@ fun PopularScreen(navController: NavController) {
             )
         }
     ) { paddingValues ->
-        PopularContent(
-            modifier = Modifier.padding(paddingValues),
-            favoriteItems = favoriteItems,
-            navController = navController
-        )
+        when (sneakersState) {
+            is NetworkResponseSneakers.Success -> {
+                PopularContent(
+                    sneakers = (sneakersState as NetworkResponseSneakers.Success).data,
+                    onFavoriteClick = viewModel::toggleFavorite,
+                    onAddToCart = { /* handle */ },
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+            is NetworkResponseSneakers.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            is NetworkResponseSneakers.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Ошибка загрузки")
+                }
+            }
+        }
     }
 }
 
 @Composable
 fun PopularContent(
-    modifier: Modifier = Modifier,
-    favoriteItems: MutableList<Int>,
-    navController: NavController
+    sneakers: List<PopularSneakersResponse>,
+    onFavoriteClick: (Int, Boolean) -> Unit,
+    onAddToCart: (PopularSneakersResponse) -> Unit,
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
-    val popularItems = List(12) { index ->
-        PopularItemData(
-            id = index,
-            title = "BEST SELLER",
-            name = "Nike Air Max",
-            price = "₽732.00",
-            imageRes = R.drawable.mainsneakers
-        )
-    }
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = modifier.fillMaxSize(),
@@ -103,22 +124,12 @@ fun PopularContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(popularItems) { item ->
-            val isFavorite = favoriteItems.contains(item.id)
+        items(sneakers) { sneaker ->
             ProductItem(
-                title = item.title,
-                name = item.name,
-                price = item.price,
-                imageRes = painterResource(item.imageRes),
-                onClick = { /* Обработка клика на товар */ },
-                isFavorite = isFavorite,
-                onFavoriteClick = {
-                    if (isFavorite) {
-                        favoriteItems.remove(item.id)
-                    } else {
-                        favoriteItems.add(item.id)
-                    }
-                },
+                sneaker = sneaker,
+                onItemClick = {  },
+                onFavoriteClick = onFavoriteClick,
+                onAddToCart = { onAddToCart(sneaker) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(0.85f)
