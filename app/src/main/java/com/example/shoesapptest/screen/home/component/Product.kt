@@ -73,13 +73,12 @@ fun ProductItem(
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
             ) {
-                Icon(
+                Image(
                     painter = painterResource(
                         if (sneaker.isFavorite) R.drawable.red_heart
                         else R.drawable.heart
                     ),
                     contentDescription = "Избранное",
-                    tint = if (sneaker.isFavorite) Color.Red else Color.Gray,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -127,10 +126,9 @@ fun ProductItem(
                     onClick = onAddToCart,
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(
+                    Image(
                         painter = painterResource(R.drawable.add_plus),
                         contentDescription = "Add to cart",
-                        tint = MatuleTheme.colors.accent,
                         modifier = Modifier.size(24.dp)
                     )
                 }

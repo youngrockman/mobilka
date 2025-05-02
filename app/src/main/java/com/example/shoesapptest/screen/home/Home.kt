@@ -130,7 +130,7 @@ fun HomeScreenContent(
             Spacer(modifier = Modifier.width(8.dp))
 
             IconButton(onClick = { }) {
-                Icon(
+                Image(
                     painter = painterResource(R.drawable.sort),
                     contentDescription = "Сортировка",
                     modifier = Modifier.size(48.dp)
