@@ -8,7 +8,7 @@ import com.example.shoesapptest.data.repository.AuthRepository
 import com.example.shoesapptest.domain.usecase.AuthUseCase
 import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 import com.example.shoesapptest.screen.regscreen.RegistrationViewModel
-import com.example.shoesapptest.screen.search.SearchViewModel
+import com.example.shoesapptest.screen.search.SneakersViewModel
 import com.example.shoesapptest.screen.signin.SignInViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -27,5 +27,5 @@ val appModules = module {
     viewModel { RegistrationViewModel(get()) }
     viewModel { SignInViewModel(get()) }
     viewModel { PopularSneakersViewModel(get()) }
-    viewModel { SearchViewModel(get()) }
+    viewModel { SneakersViewModel(get()) }
 }

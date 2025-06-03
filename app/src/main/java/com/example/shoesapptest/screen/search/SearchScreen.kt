@@ -40,7 +40,7 @@ import com.example.shoesapptest.screen.home.component.TopPanel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(navController: NavController, viewModel: SearchViewModel) {
+fun SearchScreen(navController: NavController, viewModel: SneakersViewModel) {
     val query by viewModel.query.collectAsState()
     val products by viewModel.products.collectAsState()
     val history by viewModel.history.collectAsState()

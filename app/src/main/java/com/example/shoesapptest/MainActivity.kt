@@ -26,7 +26,7 @@ import com.example.shoesapptest.screen.listing.OutdoorScreen
 import com.example.shoesapptest.screen.popular.PopularScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
 import com.example.shoesapptest.screen.search.SearchScreen
-import com.example.shoesapptest.screen.search.SearchViewModel
+import com.example.shoesapptest.screen.search.SneakersViewModel
 import com.example.shoesapptest.screen.verification.VerificationScreen
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -44,8 +44,7 @@ class MainActivity : ComponentActivity() {
                 val dataStore = DataStoreOnBoarding(LocalContext.current)
                 val popularVm: PopularSneakersViewModel = getViewModel()
                 val context = LocalContext.current
-                val dataStoreManager = remember { DataStoreManager(context) }
-                val viewModel = remember { SearchViewModel(dataStoreManager) }
+                val viewModel: SneakersViewModel = getViewModel()
 
                 NavHost(
                     navController = navController,
