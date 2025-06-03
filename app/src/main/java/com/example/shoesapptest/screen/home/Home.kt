@@ -61,24 +61,26 @@ import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 
 
 @Composable
-fun HomeScreenHast(navController: NavHostController,  viewModel: PopularSneakersViewModel = koinViewModel()) {
-
-
+fun HomeScreenHast(
+    navController: NavHostController,
+    viewModel: PopularSneakersViewModel = koinViewModel()
+) {
     Scaffold(
         topBar = {
-            TopPanel(title = "Главная",
+            TopPanel(
+                title = "Главная",
                 leftImage = painterResource(R.drawable.menu),
                 rightImage = painterResource(R.drawable.black_basket),
                 textSize = 32
             )
         },
-
         bottomBar = { BottomBar(navController) }
-    ) {
-            paddingValues ->
-        HomeScreenContent(paddingValues = paddingValues,
-            viewModel,
-            navController = navController);
+    ) { paddingValues ->
+        HomeScreenContent(
+            paddingValues = paddingValues,
+            viewModel = viewModel,
+            navController = navController
+        )
     }
 }
 
@@ -89,7 +91,6 @@ fun HomeScreenContent(
     navController: NavHostController
 ) {
     val sneakersState by viewModel.sneakersState.collectAsState()
-    val message = remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.fetchSneakers()
@@ -99,37 +100,46 @@ fun HomeScreenContent(
         modifier = Modifier
             .padding(paddingValues)
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp)
     ) {
+        // Поисковая строка + сортировка
         Row(
             modifier = Modifier
                 .padding(horizontal = 22.dp, vertical = 16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextField(
+            Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(top = 16.dp, bottom = 24.dp),
-                value = message.value,
-                onValueChange = { message.value = it },
-                placeholder = { Text("Поиск") },
-                leadingIcon = { Icon(
-                    painter = painterResource(R.drawable.lupa),
-                    contentDescription = "Поиск"
-                ) },
-                shape = RoundedCornerShape(12.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MatuleTheme.colors.block,
-                    unfocusedContainerColor = MatuleTheme.colors.background,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
+                    .clickable { navController.navigate(Screen.SearchScreen.route) }
+            ) {
+                TextField(
+                    value = "",
+                    onValueChange = {},
+                    placeholder = { Text("Поиск") },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.lupa),
+                            contentDescription = "Поиск"
+                        )
+                    },
+                    enabled = false,
+                    readOnly = true,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = MatuleTheme.colors.background,
+                        disabledTextColor = Color.Gray,
+                        disabledLeadingIconColor = Color.Gray,
+                        disabledPlaceholderColor = Color.LightGray,
+                        disabledIndicatorColor = Color.Transparent
+                    )
                 )
-            )
+            }
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            IconButton(onClick = { }) {
+            IconButton(onClick = { /* TODO: сортировка */ }) {
                 Image(
                     painter = painterResource(R.drawable.sort),
                     contentDescription = "Сортировка",
@@ -138,7 +148,7 @@ fun HomeScreenContent(
             }
         }
 
-
+        // Категории
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
             Text(
                 text = "Категории",
@@ -153,8 +163,6 @@ fun HomeScreenContent(
                         onClick = {
                             when (category) {
                                 "Outdoor" -> navController.navigate(Screen.Outdoor.route)
-                                //"Basketball" -> navController.navigate(Screen.Basketball.route)
-
                             }
                         },
                         modifier = Modifier
@@ -172,13 +180,11 @@ fun HomeScreenContent(
             }
         }
 
-
+        // Популярное
         when (sneakersState) {
             is NetworkResponseSneakers.Success -> {
                 val sneakers = (sneakersState as NetworkResponseSneakers.Success<List<PopularSneakersResponse>>).data
-                Column(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)
-                ) {
+                Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -212,7 +218,7 @@ fun HomeScreenContent(
                                     viewModel.toggleFavorite(id, isFavorite)
                                 },
                                 onAddToCart = {
-
+                                    // TODO: handle add to cart
                                 },
                                 modifier = Modifier.width(160.dp)
                             )
@@ -220,16 +226,22 @@ fun HomeScreenContent(
                     }
                 }
             }
+
             is NetworkResponseSneakers.Error -> {
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)) {
                     Text(
                         text = "Ошибка загрузки",
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
             }
+
             NetworkResponseSneakers.Loading -> {
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)) {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -237,8 +249,8 @@ fun HomeScreenContent(
             }
         }
 
-
-        Column(modifier = Modifier.padding(bottom = 32.dp)) {
+        // Акции
+        Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween

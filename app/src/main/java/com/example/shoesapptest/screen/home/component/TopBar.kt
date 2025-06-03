@@ -21,8 +21,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TopPanel(title: String,
              leftImage: Painter,
-             rightImage: Painter,
-             textSize: Int
+             rightImage: Painter? = null,
+             textSize: Int,
+             onLeftClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -56,10 +57,12 @@ fun TopPanel(title: String,
                 .align(Alignment.CenterEnd)
                 .padding(end = 16.dp)
         ) {
-            Image(
-                painter = rightImage,
-                contentDescription = "heart"
-            )
+            if (rightImage != null) {
+                Image(
+                    painter = rightImage,
+                    contentDescription = "heart"
+                )
+            }
         }
 
     }
