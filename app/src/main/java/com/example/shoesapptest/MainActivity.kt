@@ -19,10 +19,13 @@ import com.example.shoesapptest.screen.StartsScreens.FirstScreen
 import com.example.shoesapptest.screen.StartsScreens.SlideScreen
 import com.example.shoesapptest.screen.favorite.FavoriteScreen
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
+import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 import com.example.shoesapptest.screen.listing.OutdoorScreen
 import com.example.shoesapptest.screen.popular.PopularScreen
 import com.example.shoesapptest.screen.regscreen.RegisterAccountScreen
 import com.example.shoesapptest.screen.verification.VerificationScreen
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("ComposableDestinationInComposeScope")
@@ -34,6 +37,7 @@ class MainActivity : ComponentActivity() {
             MatuleTheme {
                 val navController = rememberNavController()
                 val dataStore = DataStoreOnBoarding(LocalContext.current)
+                val popularVm: PopularSneakersViewModel = getViewModel()
 
                 NavHost(
                     navController = navController,
@@ -95,15 +99,20 @@ class MainActivity : ComponentActivity() {
 
 
                     composable(Screen.Home.route) {
-                        HomeScreenHast(navController)
+                        HomeScreenHast(
+                            navController = navController,
+                            viewModel = popularVm
+                        )
                     }
-
                     composable(Screen.Popular.route) {
                         PopularScreen(navController)
                     }
 
                     composable(Screen.Favorite.route) {
-                        FavoriteScreen(navController)
+                        FavoriteScreen(
+                            navController = navController,
+                            viewModel = popularVm
+                        )
                     }
                     composable(Screen.Outdoor.route) {
                         OutdoorScreen(navController)

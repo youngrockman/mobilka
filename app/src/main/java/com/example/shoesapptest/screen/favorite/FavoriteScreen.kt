@@ -99,12 +99,8 @@ fun FavoriteScreen(
                     modifier = Modifier.padding(paddingValues),
                     favorites = favorites,
                     onItemClick = { id ->
-                        // если надо открыть детали
                     },
                     onFavoriteClick = { id, _isFavoriteIgnored ->
-                        // _isFavoriteIgnored мы не передаём,
-                        // потому что в экране Favorites
-                        // товар гарантированно был избранным → wasFavoriteBeforeClick = true
                         viewModel.toggleFavorite(id, true)
                     },
                     navController = navController
@@ -135,7 +131,7 @@ fun FavoriteContent(
     modifier: Modifier = Modifier,
     favorites: List<PopularSneakersResponse>,
     onItemClick: (Int) -> Unit,
-    onFavoriteClick: (Int, Boolean) -> Unit, // Boolean мы внутри игнорируем
+    onFavoriteClick: (Int, Boolean) -> Unit,
     navController: NavController
 ) {
     LazyVerticalGrid(
@@ -150,10 +146,9 @@ fun FavoriteContent(
             key = { it.id }
         ) { sneaker ->
             ProductItem(
-                sneaker = sneaker, // тут sneaker.isFavorite всегда true, потому что мы так принудительно сделали в fetchFavorites()
+                sneaker = sneaker,
                 onItemClick = { onItemClick(sneaker.id) },
                 onFavoriteClick = { id, _isFavoriteIgnored ->
-                    // вне зависимости от _isFavoriteIgnored → всегда убираем из избранного
                     onFavoriteClick(sneaker.id, true)
                 },
                 onAddToCart = { /* … */ },

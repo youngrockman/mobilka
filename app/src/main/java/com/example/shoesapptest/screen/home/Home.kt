@@ -61,8 +61,8 @@ import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 
 
 @Composable
-fun HomeScreenHast(navController: NavHostController) {
-    val sneakersViewModel: PopularSneakersViewModel = koinViewModel<PopularSneakersViewModel>()
+fun HomeScreenHast(navController: NavHostController,  viewModel: PopularSneakersViewModel = koinViewModel()) {
+
 
     Scaffold(
         topBar = {
@@ -77,7 +77,7 @@ fun HomeScreenHast(navController: NavHostController) {
     ) {
             paddingValues ->
         HomeScreenContent(paddingValues = paddingValues,
-            sneakersViewModel,
+            viewModel,
             navController = navController);
     }
 }
