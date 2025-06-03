@@ -39,8 +39,6 @@ fun ProductItem(
     onAddToCart: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-
     Column(
         modifier = modifier
             .height(240.dp)
@@ -64,10 +62,9 @@ fun ProductItem(
                 contentScale = ContentScale.Crop
             )
 
-
             IconButton(
                 onClick = {
-                    onFavoriteClick(sneaker.id, !sneaker.isFavorite)
+                    onFavoriteClick(sneaker.id, sneaker.isFavorite)
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)

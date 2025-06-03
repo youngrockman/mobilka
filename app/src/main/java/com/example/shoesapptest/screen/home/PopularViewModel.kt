@@ -55,32 +55,52 @@ class PopularSneakersViewModel(
         }
     }
 
-    fun toggleFavorite(sneakerId: Int, isFavorite: Boolean) {
+    fun toggleFavorite(sneakerId: Int, isCurrentlyFavorite: Boolean) {
         viewModelScope.launch {
-            if (isFavorite) {
-                when (val result = authUseCase.addToFavorites(sneakerId)) {
-                    is NetworkResponse.Success -> {
-                        fetchFavorites()
-                        fetchSneakers()
+
+            val newFavorite = !isCurrentlyFavorite
+
+
+            updateFavoriteStatus(sneakerId, newFavorite)
+
+
+            (_sneakersState.value as? NetworkResponseSneakers.Success)?.let { successState ->
+                val updatedSneakers = successState.data.map { sneaker ->
+                    if (sneaker.id == sneakerId) {
+                        sneaker.copy(isFavorite = newFavorite)
+                    } else {
+                        sneaker
                     }
-                    is NetworkResponse.Error -> {
-                        Log.e("FAVORITE", "Ошибка добавления: ${result.errorMessage}")
-                    }
-                    NetworkResponse.Loading -> {}
                 }
-            } else {
-                when (val result = authUseCase.removeFromFavorites(sneakerId)) {
-                    is NetworkResponse.Success -> {
-                        fetchFavorites()
-                        fetchSneakers()
+                _sneakersState.value = NetworkResponseSneakers.Success(updatedSneakers)
+            }
+
+
+            (_favoritesState.value as? NetworkResponseSneakers.Success)?.let { successState ->
+                if (newFavorite) {
+                    val addedSneaker = (_sneakersState.value as? NetworkResponseSneakers.Success)
+                        ?.data
+                        ?.find { it.id == sneakerId }
+
+                    if (addedSneaker != null) {
+                        val updatedFavorites = successState.data + addedSneaker
+                        _favoritesState.value = NetworkResponseSneakers.Success(updatedFavorites)
                     }
-                    is NetworkResponse.Error -> {
-                        Log.e("FAVORITE", "Ошибка удаления: ${result.errorMessage}")
-                    }
-                    NetworkResponse.Loading -> {}
+                } else {
+                    val updatedFavorites = successState.data.filter { it.id != sneakerId }
+                    _favoritesState.value = NetworkResponseSneakers.Success(updatedFavorites)
                 }
             }
         }
     }
+
+    private suspend fun updateFavoriteStatus(sneakerId: Int, favorite: Boolean) {
+        if (favorite) {
+            authUseCase.addToFavorites(sneakerId)
+        } else {
+            authUseCase.removeFromFavorites(sneakerId)
+        }
+    }
+
 }
 
