@@ -57,16 +57,27 @@ class PopularSneakersViewModel(
 
     fun toggleFavorite(sneakerId: Int, isFavorite: Boolean) {
         viewModelScope.launch {
-            when (val result = authUseCase.toggleFavorite(sneakerId, isFavorite)) {
-                is NetworkResponse.Success -> {
-                    fetchFavorites()
-                    fetchSneakers()
+            if (isFavorite) {
+                when (val result = authUseCase.addToFavorites(sneakerId)) {
+                    is NetworkResponse.Success -> {
+                        fetchFavorites()
+                        fetchSneakers()
+                    }
+                    is NetworkResponse.Error -> {
+                        Log.e("FAVORITE", "Ошибка добавления: ${result.errorMessage}")
+                    }
+                    NetworkResponse.Loading -> {}
                 }
-                is NetworkResponse.Error -> {
-                    Log.e("FAVORITE", "Ошибка: ${result.errorMessage}")
-                }
-                NetworkResponse.Loading -> {
-
+            } else {
+                when (val result = authUseCase.removeFromFavorites(sneakerId)) {
+                    is NetworkResponse.Success -> {
+                        fetchFavorites()
+                        fetchSneakers()
+                    }
+                    is NetworkResponse.Error -> {
+                        Log.e("FAVORITE", "Ошибка удаления: ${result.errorMessage}")
+                    }
+                    NetworkResponse.Loading -> {}
                 }
             }
         }

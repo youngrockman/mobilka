@@ -79,6 +79,14 @@ class AuthUseCase(private val dataStore: DataStore, private val authRepository: 
         return authRepository.toggleFavorite(sneakerId, isFavorite)
     }
 
+    suspend fun addToFavorites(sneakerId: Int): NetworkResponse<Unit> {
+        return authRepository.addToFavorites(sneakerId)
+    }
+
+    suspend fun removeFromFavorites(sneakerId: Int): NetworkResponse<Unit> {
+        return authRepository.removeFromFavorites(sneakerId)
+    }
+
 
 }
 

@@ -33,11 +33,11 @@ interface AuthRemoteSource {
     @GET("/favorites")
     suspend fun getFavorites(): List<PopularSneakersResponse>
 
-    @POST("/favorites/{sneakerId}")
-    suspend fun addToFavorites(@Path("sneakerId") sneakerId: Int): Response<ResponseBody>
+    @POST("favorites/{sneakerId}")
+    suspend fun addToFavorites(@Path("sneakerId") sneakerId: Int): Response<Unit>
 
-    @DELETE("/favorites/{sneakerId}")
-    suspend fun removeFromFavorites(@Path("sneakerId") sneakerId: Int): Response<ResponseBody>
+    @DELETE("favorites/{sneakerId}")
+    suspend fun removeFromFavorites(@Path("sneakerId") sneakerId: Int): Response<Unit>
 }
 
 

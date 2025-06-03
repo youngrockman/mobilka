@@ -73,6 +73,24 @@ class AuthRepository(val authRemoteSource: AuthRemoteSource) {
             NetworkResponseSneakers.Error(e.message ?: "Unknown Error")
         }
     }
+
+    suspend fun addToFavorites(sneakerId: Int): NetworkResponse<Unit> {
+        return try {
+            authRemoteSource.addToFavorites(sneakerId)
+            NetworkResponse.Success(Unit)
+        } catch (e: Exception) {
+            NetworkResponse.Error(e.message ?: "Failed to add to favorites")
+        }
+    }
+
+    suspend fun removeFromFavorites(sneakerId: Int): NetworkResponse<Unit> {
+        return try {
+            authRemoteSource.removeFromFavorites(sneakerId)
+            NetworkResponse.Success(Unit)
+        } catch (e: Exception) {
+            NetworkResponse.Error(e.message ?: "Failed to remove from favorites")
+        }
+    }
 }
 
 
