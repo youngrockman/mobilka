@@ -154,17 +154,25 @@ fun OutdoorContent(
 
     LaunchedEffect(category) {
         viewModel.fetchSneakersByCategory(category)
+        viewModel.fetchFavorites()
     }
 
-    when (val state = sneakersState) {
-        is NetworkResponseSneakers.Success -> {
-            val sneakersWithFavorites = state.data.map { sneaker ->
+    val sneakersWithFavorites = remember(sneakersState, favoritesState) {
+        if (sneakersState is NetworkResponseSneakers.Success) {
+            val sneakers = (sneakersState as NetworkResponseSneakers.Success).data
+            val favorites = (favoritesState as? NetworkResponseSneakers.Success)?.data ?: emptyList()
+            sneakers.map { sneaker ->
                 sneaker.copy(
-                    isFavorite = (favoritesState as? NetworkResponseSneakers.Success)?.data?.any { it.id == sneaker.id } == true
+                    isFavorite = favorites.any { it.id == sneaker.id }
                 )
             }
+        } else {
+            emptyList()
+        }
+    }
 
-
+    when (sneakersState) {
+        is NetworkResponseSneakers.Success -> {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxSize(),
@@ -187,12 +195,11 @@ fun OutdoorContent(
         }
         is NetworkResponseSneakers.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Ошибка: ${state.errorMessage}")
+                Text("Ошибка: ${(sneakersState as NetworkResponseSneakers.Error).errorMessage}")
             }
         }
-
         NetworkResponseSneakers.Loading -> {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
