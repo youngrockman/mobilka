@@ -19,19 +19,14 @@ class SneakersViewModel(
     private val authUseCase: AuthUseCase
 ) : ViewModel() {
 
-    // Поисковый запрос
+
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query
 
-    // Список продуктов (названия)
     private val _products = MutableStateFlow<List<String>>(emptyList())
     val products: StateFlow<List<String>> = _products
-
-    // Ошибка загрузки
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
-
-    // История поиска — последние 10 запросов (например)
     private val _history = MutableStateFlow<List<String>>(emptyList())
     val history: StateFlow<List<String>> = _history
 
@@ -59,25 +54,20 @@ class SneakersViewModel(
         }
     }
 
-    // Обработчик изменения текста в поле поиска
     fun onQueryChange(newQuery: String) {
         _query.value = newQuery
     }
 
-    // Обработка клика по элементу списка (история или результат)
+
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     fun onItemClicked(item: String) {
-        // Добавляем в историю, если нет дубликата
         val currentHistory = _history.value.toMutableList()
-        currentHistory.remove(item)  // удаляем если уже есть, чтобы обновить порядок
-        currentHistory.add(0, item)  // добавляем в начало
-        // Оставляем максимум 10 последних запросов
+        currentHistory.remove(item)
+        currentHistory.add(0, item)
         if (currentHistory.size > 10) {
             currentHistory.removeLast()
         }
         _history.value = currentHistory
-
-        // Обновляем поисковый запрос
         _query.value = item
     }
 }

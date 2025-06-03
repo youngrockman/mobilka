@@ -1,5 +1,7 @@
 package com.example.shoesapptest.screen.search
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,6 +40,7 @@ import androidx.navigation.NavController
 import com.example.shoesapptest.R
 import com.example.shoesapptest.screen.home.component.TopPanel
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(navController: NavController, viewModel: SneakersViewModel) {
@@ -61,7 +64,6 @@ fun SearchScreen(navController: NavController, viewModel: SneakersViewModel) {
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp, vertical = 20.dp)
         ) {
-            // Поле поиска
             TextField(
                 value = query,
                 onValueChange = viewModel::onQueryChange,
@@ -77,7 +79,7 @@ fun SearchScreen(navController: NavController, viewModel: SneakersViewModel) {
                     )
                 },
                 trailingIcon = {
-                    IconButton(onClick = { /* Голосовой ввод */ }) {
+                    IconButton(onClick = { }) {
                         Icon(
                             painter = painterResource(R.drawable.microphone),
                             contentDescription = "Голосовой поиск",
@@ -94,9 +96,8 @@ fun SearchScreen(navController: NavController, viewModel: SneakersViewModel) {
                 )
             )
 
-            // Отображаем историю или результаты поиска
+
             if (query.isEmpty()) {
-                // Показываем историю поиска
                 Text(
                     text = "История поиска",
                     fontWeight = FontWeight.Bold,
@@ -134,7 +135,6 @@ fun SearchScreen(navController: NavController, viewModel: SneakersViewModel) {
                     }
                 }
             } else {
-                // Показываем результаты поиска
                 val filteredProducts = products.filter {
                     it.contains(query.trim(), ignoreCase = true)
                 }
