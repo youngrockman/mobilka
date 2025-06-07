@@ -6,6 +6,7 @@ import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
 import com.example.shoesapptest.data.remote.network.auth.AuthRemoteSource
 import com.example.shoesapptest.data.remote.network.dto.AuthorizationRequest
 import com.example.shoesapptest.data.remote.network.dto.AuthorizationResponse
+import com.example.shoesapptest.data.remote.network.dto.CartTotal
 import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
 import com.example.shoesapptest.data.remote.network.dto.RegistrationRequest
 import com.example.shoesapptest.data.remote.network.dto.RegistrationResponse
@@ -85,6 +86,22 @@ class AuthUseCase(private val dataStore: DataStore, private val authRepository: 
 
     suspend fun removeFromFavorites(sneakerId: Int): NetworkResponse<Unit> {
         return authRepository.removeFromFavorites(sneakerId)
+    }
+
+    suspend fun getCart(): NetworkResponseSneakers<List<PopularSneakersResponse>> {
+        return authRepository.getCart()
+    }
+
+    suspend fun addToCart(sneakerId: Int): NetworkResponse<Unit> {
+        return authRepository.addToCart(sneakerId)
+    }
+
+    suspend fun removeFromCart(sneakerId: Int): NetworkResponse<Unit> {
+        return authRepository.removeFromCart(sneakerId)
+    }
+
+    suspend fun getCartTotal(): NetworkResponse<CartTotal> {
+        return authRepository.getCartTotal()
     }
 
 

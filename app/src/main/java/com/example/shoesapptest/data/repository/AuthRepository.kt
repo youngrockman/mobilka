@@ -7,6 +7,7 @@ import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
 import com.example.shoesapptest.data.remote.network.auth.AuthRemoteSource
 import com.example.shoesapptest.data.remote.network.dto.AuthorizationRequest
 import com.example.shoesapptest.data.remote.network.dto.AuthorizationResponse
+import com.example.shoesapptest.data.remote.network.dto.CartTotal
 import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
 import com.example.shoesapptest.data.remote.network.dto.RegistrationRequest
 import com.example.shoesapptest.data.remote.network.dto.RegistrationResponse
@@ -91,7 +92,50 @@ class AuthRepository(val authRemoteSource: AuthRemoteSource) {
             NetworkResponse.Error(e.message ?: "Failed to remove from favorites")
         }
     }
+
+    suspend fun getCart(): NetworkResponseSneakers<List<PopularSneakersResponse>> {
+        return try {
+            val result = authRemoteSource.getCart()
+            NetworkResponseSneakers.Success(result)
+        } catch (e: Exception) {
+            NetworkResponseSneakers.Error(e.message ?: "Failed to get cart")
+        }
+    }
+
+    suspend fun addToCart(sneakerId: Int): NetworkResponse<Unit> {
+        return try {
+            authRemoteSource.addToCart(sneakerId)
+            NetworkResponse.Success(Unit)
+        } catch (e: Exception) {
+            NetworkResponse.Error(e.message ?: "Failed to add to cart")
+        }
+    }
+
+    suspend fun removeFromCart(sneakerId: Int): NetworkResponse<Unit> {
+        return try {
+            authRemoteSource.removeFromCart(sneakerId)
+            NetworkResponse.Success(Unit)
+        } catch (e: Exception) {
+            NetworkResponse.Error(e.message ?: "Failed to remove from cart")
+        }
+    }
+
+    suspend fun getCartTotal(): NetworkResponse<CartTotal> {
+        return try {
+            val result = authRemoteSource.getCartTotal()
+            NetworkResponse.Success(CartTotal(
+                itemsCount = result["itemsCount"]?.toInt() ?: 0,
+                total = result["total"] ?: 0.0,
+                delivery = result["delivery"] ?: 0.0,
+                finalTotal = result["finalTotal"] ?: 0.0
+            ))
+        } catch (e: Exception) {
+            NetworkResponse.Error(e.message ?: "Failed to get cart total")
+        }
+    }
 }
+
+
 
 
 

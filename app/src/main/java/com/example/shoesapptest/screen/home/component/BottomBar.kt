@@ -63,7 +63,7 @@ fun BottomBar(navController: NavController) {
 
             // Центральная кнопка (да я знаю где центр)
             IconButton(
-                onClick = { /* ... */ },
+                onClick = { navController.navigate(Screen.Cart.route) },
                 modifier = Modifier
                     .size(96.dp)
                     .offset(y = (-32).dp)

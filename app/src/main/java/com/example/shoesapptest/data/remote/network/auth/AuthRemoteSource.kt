@@ -38,6 +38,18 @@ interface AuthRemoteSource {
 
     @DELETE("favorites/{sneakerId}")
     suspend fun removeFromFavorites(@Path("sneakerId") sneakerId: Int): Response<Unit>
+
+    @GET("/cart")
+    suspend fun getCart(): List<PopularSneakersResponse>
+
+    @POST("/cart/{sneakerId}")
+    suspend fun addToCart(@Path("sneakerId") sneakerId: Int): Response<Unit>
+
+    @DELETE("/cart/{sneakerId}")
+    suspend fun removeFromCart(@Path("sneakerId") sneakerId: Int): Response<Unit>
+
+    @GET("/cart/total")
+    suspend fun getCartTotal(): Map<String, Double>
 }
 
 

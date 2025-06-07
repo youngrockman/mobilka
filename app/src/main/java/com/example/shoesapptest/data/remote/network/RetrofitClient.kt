@@ -43,7 +43,7 @@ class RetrofitClient(
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.4.56:8080/")
+            .baseUrl("http://192.168.0.107:8080/")
             .client(okHttpClient)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()

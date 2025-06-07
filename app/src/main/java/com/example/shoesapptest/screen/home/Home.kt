@@ -55,6 +55,7 @@ import com.example.shoesapptest.R
 import com.example.shoesapptest.Screen
 import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
 import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
+import com.example.shoesapptest.screen.cart.CartViewModel
 import com.example.shoesapptest.screen.home.component.BottomBar
 import com.example.shoesapptest.screen.home.component.TopPanel
 import com.example.shoesapptest.screen.home.PopularSneakersViewModel
@@ -63,7 +64,8 @@ import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 @Composable
 fun HomeScreenHast(
     navController: NavHostController,
-    viewModel: PopularSneakersViewModel = koinViewModel()
+    viewModel: PopularSneakersViewModel = koinViewModel(),
+    cartViewModel: CartViewModel = koinViewModel()
 ) {
     Scaffold(
         topBar = {
@@ -79,7 +81,8 @@ fun HomeScreenHast(
         HomeScreenContent(
             paddingValues = paddingValues,
             viewModel = viewModel,
-            navController = navController
+            navController = navController,
+            cartViewModel = cartViewModel
         )
     }
 }
@@ -88,7 +91,8 @@ fun HomeScreenHast(
 fun HomeScreenContent(
     paddingValues: PaddingValues,
     viewModel: PopularSneakersViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    cartViewModel: CartViewModel
 ) {
     val sneakersState by viewModel.sneakersState.collectAsState()
 
@@ -217,9 +221,7 @@ fun HomeScreenContent(
                                 onFavoriteClick = { id, isFavorite ->
                                     viewModel.toggleFavorite(id, isFavorite)
                                 },
-                                onAddToCart = {
-                                    // TODO: handle add to cart
-                                },
+                                onAddToCart = { cartViewModel.addToCart(sneaker.id) },
                                 modifier = Modifier.width(160.dp)
                             )
                         }

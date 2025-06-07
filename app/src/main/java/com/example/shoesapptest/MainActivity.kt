@@ -2,9 +2,11 @@ package com.example.shoesapptest
 
 
 import android.annotation.SuppressLint
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.bundle.Bundle
@@ -19,6 +21,8 @@ import com.example.shoesapptest.data.local.DataStoreManager
 import com.example.shoesapptest.data.local.DataStoreOnBoarding
 import com.example.shoesapptest.screen.StartsScreens.FirstScreen
 import com.example.shoesapptest.screen.StartsScreens.SlideScreen
+import com.example.shoesapptest.screen.cart.CartScreen
+import com.example.shoesapptest.screen.cart.CartViewModel
 import com.example.shoesapptest.screen.favorite.FavoriteScreen
 import com.example.shoesapptest.screen.forgotpassword.ForgotPassScreen
 import com.example.shoesapptest.screen.home.PopularSneakersViewModel
@@ -30,9 +34,11 @@ import com.example.shoesapptest.screen.search.SneakersViewModel
 import com.example.shoesapptest.screen.verification.VerificationScreen
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @SuppressLint("ComposableDestinationInComposeScope")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,6 +133,11 @@ class MainActivity : ComponentActivity() {
 
                     composable (Screen.SearchScreen.route){
                         SearchScreen(navController,viewModel)
+                    }
+
+                    composable(Screen.Cart.route) {
+                        val viewModel: CartViewModel = koinViewModel()
+                        CartScreen(navController, viewModel)
                     }
 
                 }
