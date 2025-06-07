@@ -58,6 +58,10 @@ interface AuthRemoteSource {
         @Query("productId") productId: Int,
         @Query("quantity") quantity: Int
     ): Response<Unit>
+
+
+    @DELETE("cart/remove-all/{sneakerId}")
+    suspend fun removeAllFromCart(@Path("sneakerId") sneakerId: Int): Response<Unit>
 }
 
 

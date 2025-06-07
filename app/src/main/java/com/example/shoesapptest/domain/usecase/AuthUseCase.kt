@@ -109,6 +109,10 @@ class AuthUseCase(private val dataStore: DataStore, private val authRepository: 
 
     }
 
+    suspend fun removeAllFromCart(sneakerId: Int): NetworkResponse<Unit> {
+        return authRepository.removeAllFromCart(sneakerId)
+    }
+
 
 
 }

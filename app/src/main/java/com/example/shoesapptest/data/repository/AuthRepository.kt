@@ -143,6 +143,15 @@ class AuthRepository(val authRemoteSource: AuthRemoteSource) {
         }
     }
 
+    suspend fun removeAllFromCart(sneakerId: Int): NetworkResponse<Unit> {
+        return try {
+            authRemoteSource.removeAllFromCart(sneakerId)
+            NetworkResponse.Success(Unit)
+        } catch (e: Exception) {
+            NetworkResponse.Error(e.message ?: "Failed to remove all from cart")
+        }
+    }
+
 
 
 }

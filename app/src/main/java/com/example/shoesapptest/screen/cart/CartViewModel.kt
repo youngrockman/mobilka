@@ -44,7 +44,7 @@ class CartViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
 
     fun removeFromCart(sneakerId: Int) {
         viewModelScope.launch {
-            val result = authUseCase.removeFromCart(sneakerId)
+            val result = authUseCase.removeAllFromCart(sneakerId)
             if (result is NetworkResponse.Success) {
                 fetchCart()
             }
