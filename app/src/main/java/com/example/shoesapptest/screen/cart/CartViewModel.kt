@@ -23,6 +23,8 @@ class CartViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
     private val _totalState = MutableStateFlow<NetworkResponse<CartTotal>>(NetworkResponse.Loading)
     val totalState: StateFlow<NetworkResponse<CartTotal>> = _totalState.asStateFlow()
 
+    private var currentCartItems: List<PopularSneakersResponse> = emptyList()
+
     init {
         fetchCart()
     }
@@ -33,24 +35,27 @@ class CartViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
             _totalState.value = NetworkResponse.Loading
 
             val cartResult = authUseCase.getCart()
-            _cartState.value = cartResult
-
             if (cartResult is NetworkResponseSneakers.Success) {
-                calculateTotal(cartResult.data)
+                currentCartItems = cartResult.data
+                _cartState.value = cartResult
+                calculateTotal(currentCartItems)
+            } else {
+                _cartState.value = cartResult
+                _totalState.value = NetworkResponse.Loading
             }
         }
     }
-
 
     fun removeFromCart(sneakerId: Int) {
         viewModelScope.launch {
             val result = authUseCase.removeAllFromCart(sneakerId)
             if (result is NetworkResponse.Success) {
-                fetchCart()
+                currentCartItems = currentCartItems.filterNot { it.id == sneakerId }
+                _cartState.value = NetworkResponseSneakers.Success(currentCartItems)
+                calculateTotal(currentCartItems)
             }
         }
     }
-
 
     fun addToCart(sneakerId: Int) {
         viewModelScope.launch {
@@ -61,9 +66,20 @@ class CartViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
         }
     }
 
+    fun updateQuantity(sneakerId: Int, newQuantity: Int) {
+        viewModelScope.launch {
+            val result = authUseCase.updateCartQuantity(sneakerId, newQuantity)
+            if (result is NetworkResponse.Success<*>) {
+                currentCartItems = currentCartItems.map {
+                    if (it.id == sneakerId) it.copy(quantity = newQuantity) else it
+                }
+                _cartState.value = NetworkResponseSneakers.Success(currentCartItems)
+                calculateTotal(currentCartItems)
+            }
+        }
+    }
 
-
-    fun calculateTotal(items: List<PopularSneakersResponse>) {
+    private fun calculateTotal(items: List<PopularSneakersResponse>) {
         val itemsCount = items.sumOf { it.quantity ?: 1 }
         val total = items.sumOf { it.price * (it.quantity ?: 1).toDouble() }
         val delivery = 500.0
@@ -73,15 +89,4 @@ class CartViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
             CartTotal(itemsCount, total, delivery, finalTotal)
         )
     }
-
-    fun updateQuantity(sneakerId: Int, newQuantity: Int) {
-        viewModelScope.launch {
-            authUseCase.updateCartQuantity(sneakerId, newQuantity)
-            fetchCart()
-        }
-    }
-
-
-
-
 }
