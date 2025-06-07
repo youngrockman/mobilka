@@ -131,9 +131,12 @@ class MainActivity : ComponentActivity() {
                         OutdoorScreen(navController)
                     }
 
-                    composable (Screen.SearchScreen.route){
-                        SearchScreen(viewModel)
+                    composable(Screen.SearchScreen.route) {
+                        SearchScreen(
+                            viewModel = viewModel, navController = navController
+                        )
                     }
+
 
                     composable(Screen.Cart.route) {
                         val viewModel: CartViewModel = koinViewModel()

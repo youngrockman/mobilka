@@ -1,6 +1,7 @@
 package com.example.shoesapptest.di
 
 import com.example.shoesapptest.data.local.DataStore
+import com.example.shoesapptest.data.local.DataStoreManager
 import com.example.shoesapptest.data.remote.network.AuthInterceptor
 import com.example.shoesapptest.data.remote.network.RetrofitClient
 import com.example.shoesapptest.data.remote.network.auth.AuthRemoteSource
@@ -18,6 +19,7 @@ import org.koin.dsl.module
 val appModules = module {
 
     single { DataStore(get()) }
+    single { DataStoreManager(androidContext()) }
     single { AuthInterceptor(get()) }
     single { RetrofitClient(get()) }
     single { get<RetrofitClient>().authService }
@@ -28,6 +30,6 @@ val appModules = module {
     viewModel { RegistrationViewModel(get()) }
     viewModel { SignInViewModel(get()) }
     viewModel { PopularSneakersViewModel(get()) }
-    viewModel { SneakersViewModel(get()) }
+    viewModel { SneakersViewModel(get(), get()) }
     viewModel { CartViewModel(get()) }
 }
