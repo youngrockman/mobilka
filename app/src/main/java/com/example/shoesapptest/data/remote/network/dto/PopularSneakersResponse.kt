@@ -15,5 +15,6 @@ data class PopularSneakersResponse(
     @SerialName("isPopular")
     val isPopular: Boolean,
     @SerialName("isFavorite")
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val quantity: Int? = null
 )

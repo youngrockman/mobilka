@@ -13,8 +13,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CartViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
-    private val _cartState = MutableStateFlow<NetworkResponseSneakers<List<PopularSneakersResponse>>>(NetworkResponseSneakers.Loading)
-    val cartState: StateFlow<NetworkResponseSneakers<List<PopularSneakersResponse>>> = _cartState.asStateFlow()
+    private val _cartState =
+        MutableStateFlow<NetworkResponseSneakers<List<PopularSneakersResponse>>>(
+            NetworkResponseSneakers.Loading
+        )
+    val cartState: StateFlow<NetworkResponseSneakers<List<PopularSneakersResponse>>> =
+        _cartState.asStateFlow()
 
     private val _totalState = MutableStateFlow<NetworkResponse<CartTotal>>(NetworkResponse.Loading)
     val totalState: StateFlow<NetworkResponse<CartTotal>> = _totalState.asStateFlow()
@@ -28,29 +32,56 @@ class CartViewModel(private val authUseCase: AuthUseCase) : ViewModel() {
             _cartState.value = NetworkResponseSneakers.Loading
             _totalState.value = NetworkResponse.Loading
 
-            _cartState.value = authUseCase.getCart()
-            _totalState.value = authUseCase.getCartTotal()
+            val cartResult = authUseCase.getCart()
+            _cartState.value = cartResult
+
+            if (cartResult is NetworkResponseSneakers.Success) {
+                calculateTotal(cartResult.data)
+            }
         }
     }
+
 
     fun removeFromCart(sneakerId: Int) {
         viewModelScope.launch {
-            when (authUseCase.removeFromCart(sneakerId)) {
-                is NetworkResponse.Success -> fetchCart()
-                is NetworkResponse.Error -> Unit
-                NetworkResponse.Loading -> Unit
+            val result = authUseCase.removeFromCart(sneakerId)
+            if (result is NetworkResponse.Success) {
+                fetchCart()
             }
         }
     }
 
+
     fun addToCart(sneakerId: Int) {
         viewModelScope.launch {
-            when (authUseCase.addToCart(sneakerId)) {
-                is NetworkResponse.Success -> fetchCart()
-                is NetworkResponse.Error -> Unit
-                NetworkResponse.Loading -> Unit
+            val result = authUseCase.addToCart(sneakerId)
+            if (result is NetworkResponse.Success) {
+                fetchCart()
             }
         }
     }
+
+
+
+    fun calculateTotal(items: List<PopularSneakersResponse>) {
+        val itemsCount = items.sumOf { it.quantity ?: 1 }
+        val total = items.sumOf { it.price * (it.quantity ?: 1).toDouble() }
+        val delivery = 500.0
+        val finalTotal = total + delivery
+
+        _totalState.value = NetworkResponse.Success(
+            CartTotal(itemsCount, total, delivery, finalTotal)
+        )
+    }
+
+    fun updateQuantity(sneakerId: Int, newQuantity: Int) {
+        viewModelScope.launch {
+            authUseCase.updateCartQuantity(sneakerId, newQuantity)
+            fetchCart()
+        }
+    }
+
+
+
 
 }

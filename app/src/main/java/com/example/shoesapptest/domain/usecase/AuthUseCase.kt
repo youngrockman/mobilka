@@ -104,6 +104,12 @@ class AuthUseCase(private val dataStore: DataStore, private val authRepository: 
         return authRepository.getCartTotal()
     }
 
+    suspend fun updateCartQuantity(productId: Int, quantity: Int) {
+        authRepository.updateCartQuantity(productId, quantity)
+
+    }
+
+
 
 }
 

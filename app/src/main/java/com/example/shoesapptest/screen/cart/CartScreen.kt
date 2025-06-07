@@ -1,34 +1,15 @@
 package com.example.shoesapptest.screen.cart
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,12 +18,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
+import com.example.shoesapptest.Screen
 import com.example.shoesapptest.data.remote.network.NetworkResponse
 import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
 import com.example.shoesapptest.data.remote.network.dto.CartTotal
 import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
 import com.example.shoesapptest.screen.home.component.TopPanel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +45,9 @@ fun CartScreen(
                 leftImage = painterResource(R.drawable.back_arrow),
                 rightImage = null,
                 textSize = 24,
-                onLeftClick = { navController.navigateUp() }
+                onLeftClick = { navController.navigate(Screen.Home.route)
+
+                }
             )
         }
     ) { paddingValues ->
@@ -78,7 +61,17 @@ fun CartScreen(
                 is NetworkResponseSneakers.Success -> {
                     val cartItems = (cartState as NetworkResponseSneakers.Success<List<PopularSneakersResponse>>).data
 
-                    // Количество товаров
+                    if (cartItems.isEmpty()) {
+                        Text(
+                            text = "Корзина пуста",
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .padding(top = 32.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                        return@Column
+                    }
+
                     Text(
                         text = "${cartItems.size} товара",
                         fontSize = 14.sp,
@@ -86,20 +79,30 @@ fun CartScreen(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // Список товаров
                     LazyColumn(
                         modifier = Modifier.weight(1f)
                     ) {
                         items(cartItems) { sneaker ->
                             CartItem(
                                 sneaker = sneaker,
-                                onRemoveClick = { viewModel.removeFromCart(sneaker.id) }
+                                onRemoveClick = { viewModel.removeFromCart(sneaker.id) },
+                                onIncrement = {
+                                    val newQty = (sneaker.quantity ?: 1) + 1
+                                    viewModel.updateQuantity(sneaker.id, newQty)
+                                },
+                                onDecrement = {
+                                    val currentQty = sneaker.quantity ?: 1
+                                    if (currentQty > 1) {
+                                        viewModel.updateQuantity(sneaker.id, currentQty - 1)
+                                    } else {
+                                        viewModel.removeFromCart(sneaker.id)
+                                    }
+                                }
                             )
                             Divider()
                         }
                     }
 
-                    // Итого
                     when (totalState) {
                         is NetworkResponse.Success -> {
                             val total = (totalState as NetworkResponse.Success<CartTotal>).data
@@ -115,7 +118,6 @@ fun CartScreen(
                         else -> Unit
                     }
 
-                    // Кнопка оформления
                     Button(
                         onClick = { /* Оформление заказа */ },
                         modifier = Modifier
@@ -154,42 +156,79 @@ fun CartScreen(
 @Composable
 fun CartItem(
     sneaker: PopularSneakersResponse,
-    onRemoveClick: () -> Unit
+    onRemoveClick: () -> Unit,
+    onIncrement: () -> Unit,
+    onDecrement: () -> Unit
 ) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color.LightGray)
     ) {
-        AsyncImage(
-            model = sneaker.imageUrl,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp)
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = sneaker.name,
-                style = MaterialTheme.typography.titleMedium
+            AsyncImage(
+                model = sneaker.imageUrl,
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                placeholder = painterResource(R.drawable.mainsneakers),
+                error = painterResource(R.drawable.mainsneakers),
+                contentScale = ContentScale.Crop
             )
-            Text(
-                text = "P${"%.2f".format(sneaker.price)}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MatuleTheme.colors.accent
-            )
-        }
 
-        IconButton(onClick = onRemoveClick) {
-            Icon(
-                painter = painterResource(R.drawable.trash),
-                contentDescription = "Удалить",
-                tint = Color.Gray
-            )
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = sneaker.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "P${"%.2f".format(sneaker.price)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MatuleTheme.colors.accent
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onDecrement) {
+                    Icon(
+                        painter = painterResource(R.drawable.minus),
+                        contentDescription = "Уменьшить",
+                        tint = Color.Black
+                    )
+                }
+
+                Text(
+                    text = "${sneaker.quantity ?: 1}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                IconButton(onClick = onIncrement) {
+                    Icon(
+                        painter = painterResource(R.drawable.plus),
+                        contentDescription = "Увеличить",
+                        tint = Color.Black
+                    )
+                }
+
+                IconButton(onClick = onRemoveClick) {
+                    Icon(
+                        painter = painterResource(R.drawable.trash),
+                        contentDescription = "Удалить",
+                        tint = Color.Gray
+                    )
+                }
+            }
         }
     }
 }

@@ -133,6 +133,18 @@ class AuthRepository(val authRemoteSource: AuthRemoteSource) {
             NetworkResponse.Error(e.message ?: "Failed to get cart total")
         }
     }
+
+    suspend fun updateCartQuantity(productId: Int, quantity: Int): NetworkResponse<Unit> {
+        return try {
+            authRemoteSource.updateCartQuantity(productId, quantity)
+            NetworkResponse.Success(Unit)
+        } catch (e: Exception) {
+            NetworkResponse.Error(e.message ?: "Failed to update quantity")
+        }
+    }
+
+
+
 }
 
 
