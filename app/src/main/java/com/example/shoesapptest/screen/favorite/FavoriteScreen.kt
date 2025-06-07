@@ -33,6 +33,7 @@ import androidx.navigation.NavController
 import com.example.shoesapptest.R
 import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
 import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
+import com.example.shoesapptest.screen.cart.CartViewModel
 import com.example.shoesapptest.screen.home.component.BottomBar
 import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,7 +42,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun FavoriteScreen(
     navController: NavController,
-    viewModel: PopularSneakersViewModel = koinViewModel()
+    viewModel: PopularSneakersViewModel = koinViewModel(),
+    cartViewModel: CartViewModel = koinViewModel()
 ) {
     val favoritesState by viewModel.favoritesState.collectAsState()
 
@@ -103,7 +105,8 @@ fun FavoriteScreen(
                     onFavoriteClick = { id, _isFavoriteIgnored ->
                         viewModel.toggleFavorite(id, true)
                     },
-                    navController = navController
+                    navController = navController,
+                    cartViewModel = cartViewModel
                 )
             }
             is NetworkResponseSneakers.Error -> {
@@ -132,7 +135,8 @@ fun FavoriteContent(
     favorites: List<PopularSneakersResponse>,
     onItemClick: (Int) -> Unit,
     onFavoriteClick: (Int, Boolean) -> Unit,
-    navController: NavController
+    navController: NavController,
+    cartViewModel: CartViewModel
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -151,7 +155,7 @@ fun FavoriteContent(
                 onFavoriteClick = { id, _isFavoriteIgnored ->
                     onFavoriteClick(sneaker.id, true)
                 },
-                onAddToCart = { /* … */ },
+                onAddToCart = { cartViewModel.addToCart(sneaker.id) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(0.85f)
