@@ -47,6 +47,7 @@ import com.example.shoesapp.ui.theme.MatuleTheme
 import com.example.shoesapptest.R
 import com.example.shoesapptest.data.remote.network.NetworkResponseSneakers
 import com.example.shoesapptest.data.remote.network.dto.PopularSneakersResponse
+import com.example.shoesapptest.screen.cart.CartViewModel
 import com.example.shoesapptest.screen.home.PopularSneakersViewModel
 import com.example.shoesapptest.screen.home.component.BottomBar
 import com.example.shoesapptest.screen.listing.component.ProductItemData
@@ -57,7 +58,8 @@ import java.nio.file.WatchEvent
 @Composable
 fun OutdoorScreen(
     navController: NavController,
-    categories: List<String> = listOf("Всё", "Outdoor", "Tennis", "Basketball", "Running")
+    categories: List<String> = listOf("Всё", "Outdoor", "Tennis", "Basketball", "Running"),
+    cartViewModel: CartViewModel = koinViewModel()
 ) {
     var selectedCategory by remember { mutableStateOf("Outdoor") }
 
@@ -97,13 +99,14 @@ fun OutdoorScreen(
                 selectedCategory = selectedCategory,
                 onCategorySelected = { category ->
                     selectedCategory = category
-
-                }
+                },
+                cartViewModel = cartViewModel
             )
 
             OutdoorContent(
                 navController = navController,
-                category = selectedCategory
+                category = selectedCategory,
+                cartViewModel = cartViewModel
             )
         }
     }
@@ -113,11 +116,13 @@ fun OutdoorScreen(
 fun CategoryTabs(
     categories: List<String>,
     selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    onCategorySelected: (String) -> Unit,
+    cartViewModel: CartViewModel
 ) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.White)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -126,9 +131,8 @@ fun CategoryTabs(
                 modifier = Modifier
                     .clickable { onCategorySelected(category) }
                     .background(
-                        color = if (category == selectedCategory) MatuleTheme.colors.accent
-                        else Color.White,
-                        shape = RoundedCornerShape(10.dp)
+                        color = if (category == selectedCategory) MatuleTheme.colors.accent else Color.White,
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
@@ -147,7 +151,8 @@ fun CategoryTabs(
 fun OutdoorContent(
     navController: NavController,
     category: String,
-    viewModel: PopularSneakersViewModel = koinViewModel()
+    viewModel: PopularSneakersViewModel = koinViewModel(),
+    cartViewModel: CartViewModel
 ) {
     val sneakersState by viewModel.sneakersState.collectAsState()
     val favoritesState by viewModel.favoritesState.collectAsState()
@@ -184,10 +189,8 @@ fun OutdoorContent(
                     ProductItem(
                         sneaker = sneaker,
                         onItemClick = { navController.navigate("details/${sneaker.id}") },
-                        onFavoriteClick = { id, isFavorite ->
-                            viewModel.toggleFavorite(id, isFavorite)
-                        },
-                        onAddToCart = { /* Добавление в корзину */ },
+                        onFavoriteClick = { id, isFavorite -> viewModel.toggleFavorite(id, isFavorite) },
+                        onAddToCart = { cartViewModel.addToCart(sneaker.id) }, // Добавление в корзину
                         modifier = Modifier.aspectRatio(0.85f)
                     )
                 }
