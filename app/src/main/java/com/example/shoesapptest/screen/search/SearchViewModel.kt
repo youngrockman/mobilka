@@ -94,6 +94,19 @@ class SneakersViewModel(
             }
         }
     }
+
+    fun addToFavorite(sneakerId: Int) {
+        viewModelScope.launch {
+            authUseCase.addToFavorites(sneakerId)
+        }
+    }
+
+    fun removeFromFavorite(sneakerId: Int) {
+        viewModelScope.launch {
+            authUseCase.removeFromFavorites(sneakerId)
+        }
+    }
+
 }
 
 

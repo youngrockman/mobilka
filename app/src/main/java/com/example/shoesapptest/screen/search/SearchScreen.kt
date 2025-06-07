@@ -120,8 +120,11 @@ fun SearchScreen(
                             SearchResultsGrid(
                                 sneakers = sneakers,
                                 onAddToCart = viewModel::addToCart,
+                                onAddToFavorite = { viewModel.addToFavorite(it) },
+                                onRemoveFromFavorite = { viewModel.removeFromFavorite(it) },
                                 navController = navController
                             )
+
                         }
                     }
                     is NetworkResponseSneakers.Error -> {
@@ -137,11 +140,15 @@ fun SearchScreen(
 }
 
 @Composable
-private fun SearchResultsGrid(
+fun SearchResultsGrid(
     sneakers: List<PopularSneakersResponse>,
     onAddToCart: (Int) -> Unit,
+    onAddToFavorite: (Int) -> Unit,
+    onRemoveFromFavorite: (Int) -> Unit,
     navController: NavController
 ) {
+    var sneakersState by remember { mutableStateOf(sneakers) }
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
@@ -149,17 +156,30 @@ private fun SearchResultsGrid(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(sneakers) { sneaker ->
+        items(sneakersState, key = { it.id }) { sneaker ->
             ProductItem(
                 sneaker = sneaker,
                 onItemClick = { navController.navigate("details/${sneaker.id}") },
-                onFavoriteClick = { _, _ -> /* Пока не реализовано */ },
+                onFavoriteClick = { id, isFavorite ->
+                    sneakersState = sneakersState.map {
+                        if (it.id == id) it.copy(isFavorite = !isFavorite) else it
+                    }
+                    if (isFavorite) {
+                        onRemoveFromFavorite(id)
+                    } else {
+                        onAddToFavorite(id)
+                    }
+                },
                 onAddToCart = { onAddToCart(sneaker.id) },
                 modifier = Modifier.aspectRatio(0.85f)
             )
         }
     }
 }
+
+
+
+
 
 @Composable
 private fun SearchInput(
