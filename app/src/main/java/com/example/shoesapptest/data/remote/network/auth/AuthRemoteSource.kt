@@ -62,6 +62,11 @@ interface AuthRemoteSource {
 
     @DELETE("cart/remove-all/{sneakerId}")
     suspend fun removeAllFromCart(@Path("sneakerId") sneakerId: Int): Response<Unit>
+
+    @GET("/sneakers/search")
+    suspend fun searchSneakers(@Query("query") query: String): List<PopularSneakersResponse>
+
+
 }
 
 

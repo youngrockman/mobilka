@@ -113,6 +113,11 @@ class AuthUseCase(private val dataStore: DataStore, private val authRepository: 
         return authRepository.removeAllFromCart(sneakerId)
     }
 
+    suspend fun searchSneakers(query: String): NetworkResponseSneakers<List<PopularSneakersResponse>> {
+        return authRepository.searchSneakers(query)
+    }
+
+
 
 
 }

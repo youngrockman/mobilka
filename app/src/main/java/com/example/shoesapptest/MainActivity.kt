@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable (Screen.SearchScreen.route){
-                        SearchScreen(navController,viewModel)
+                        SearchScreen(viewModel)
                     }
 
                     composable(Screen.Cart.route) {

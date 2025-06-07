@@ -152,6 +152,16 @@ class AuthRepository(val authRemoteSource: AuthRemoteSource) {
         }
     }
 
+    suspend fun searchSneakers(query: String): NetworkResponseSneakers<List<PopularSneakersResponse>> {
+        return try {
+            val result = authRemoteSource.searchSneakers(query)
+            NetworkResponseSneakers.Success(result)
+        } catch (e: Exception) {
+            NetworkResponseSneakers.Error(e.message ?: "Search failed")
+        }
+    }
+
+
 
 
 }
